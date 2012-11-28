@@ -283,7 +283,7 @@ public class GameView extends JFrame implements GameListener {
 	}
 	
 	// update view when game changes	
-	public void commandProcessed(GameEvent e) {
+	public void commandProcessed(GameModifiedEvent e) {
 		this.drawing2D.repaint();
 		this.drawing3D.repaint();
 		dspMessage(e.getGameStatus());

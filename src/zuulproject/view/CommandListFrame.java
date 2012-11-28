@@ -62,7 +62,7 @@ public class CommandListFrame extends JFrame implements GameListener {
 	 * Whenever a command is processed, the model will call this function, and the JList will be updated
 	 */
 	@Override
-	public void commandProcessed(GameEvent e) {
+	public void commandProcessed(GameModifiedEvent e) {
 		listModel.clear();
 		List<String> listContent;
 		if (game.getGame().getPlayer().inBattle()) {

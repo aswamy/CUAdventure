@@ -53,7 +53,7 @@ public class InventoryFrame extends JFrame implements GameListener {
 	 * Whenever a command is processed, the model will call this function, and the JList will be updated
 	 */
 	@Override
-	public void commandProcessed(GameEvent e) {
+	public void commandProcessed(GameModifiedEvent e) {
 		listModel.clear();
 		List<String> listContent = game.getGame().getPlayer().getItemListString();
 		for (String s : listContent) listModel.addElement(s);

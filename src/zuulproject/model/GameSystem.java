@@ -35,12 +35,12 @@ public class GameSystem {
 	public void processCmd(String s) {
 		if (gameFinished()) gameStatus = Game.GAME_END;
 		else gameStatus = game.playGame(s);
-		announceGameStatus(new GameEvent(this));
+		announceGameStatus(new GameModifiedEvent(this));
 		if (gameFinished()) announceGameEnded();
 	}
 	
 	// announce the game status to all that want to listen (GameListeners)
-	protected void announceGameStatus(GameEvent e) {
+	protected void announceGameStatus(GameModifiedEvent e) {
 		for (GameListener g : listenerList) g.commandProcessed(e);
 	}
 	
@@ -60,7 +60,7 @@ public class GameSystem {
 		newGame.initializeGame();
 		game = newGame;
 		gameStatus = game.dspWelcome();
-		announceGameStatus(new GameEvent(this));
+		announceGameStatus(new GameModifiedEvent(this));
 	}
 	
 	// Determines whether the game console is on, but no game is running

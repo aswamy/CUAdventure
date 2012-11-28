@@ -1,24 +1,17 @@
 package zuulproject.event;
 
-import zuulproject.model.*;
 import java.util.EventObject;
 
 /**
- * An event created by the model to alert the views that the game has changed
+ * Just an event Object that all game events extend from
+ * @author Alok
+ *
  */
+public class GameEvent extends EventObject {
 
-public class GameEvent extends EventObject {	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6134178878134047837L;
 
-	private String gameStatus;
-	
 	public GameEvent(Object source) {
 		super(source);
-		gameStatus = ((GameSystem)source).getGameStatus();
-	}
-	
-	// returns the status of the game
-	public String getGameStatus() {
-		return gameStatus;
-	}
+	}	
 }
