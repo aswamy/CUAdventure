@@ -20,7 +20,7 @@ import javax.swing.ListSelectionModel;
  */
 
 
-public class RoomItemFrame extends JFrame implements GameListener {
+public class RoomItemFrame extends JFrame implements GameModifiedListener {
 	
 	private static final long serialVersionUID = -8817821070075378882L;
 	
@@ -58,7 +58,7 @@ public class RoomItemFrame extends JFrame implements GameListener {
 	}
 
 	@Override
-	public void endGame() {
+	public void gameEnded() {
 	}
 	
 	// when a item in JList is clicked, it puts the string representation of the item in the commandbox

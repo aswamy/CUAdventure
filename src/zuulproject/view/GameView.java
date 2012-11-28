@@ -14,7 +14,7 @@ import java.awt.event.*;
  * so it gets updated when any changes occur
  */
 
-public class GameView extends JFrame implements GameListener {
+public class GameView extends JFrame implements GameModifiedListener {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -290,7 +290,7 @@ public class GameView extends JFrame implements GameListener {
 	}
 	
 	// disable all buttons
-	public void endGame() {
+	public void gameEnded() {
 		disableCommandPanel();
 		disableGameButtons();
 	}

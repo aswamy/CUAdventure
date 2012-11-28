@@ -19,7 +19,7 @@ import javax.swing.ListSelectionModel;
  * It implements GameListener because when the game changes (goes from battle mode to regular mode), the command words change
  */
 
-public class CommandListFrame extends JFrame implements GameListener {
+public class CommandListFrame extends JFrame implements GameModifiedListener {
 	
 	private static final long serialVersionUID = 4682921453466334303L;
 
@@ -78,7 +78,7 @@ public class CommandListFrame extends JFrame implements GameListener {
 	 * This is a required function when you implement GameListener - currently does nothing
 	 */
 	@Override
-	public void endGame() {
+	public void gameEnded() {
 	}
 	
 	/*

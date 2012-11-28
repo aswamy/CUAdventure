@@ -13,21 +13,21 @@ import java.util.List;
 public class GameSystem {
 	private Game game;
 	private String gameStatus;
-	private List<GameListener> listenerList;
+	private List<GameModifiedListener> listenerList;
 	
 	public GameSystem() {
 		game = null;
 		gameStatus = new String();
-		listenerList = new ArrayList<GameListener>();
+		listenerList = new ArrayList<GameModifiedListener>();
 	}
 	
 	// Add people who want to listen to the game
-	public synchronized void addGameListener(GameListener g) {
+	public synchronized void addGameListener(GameModifiedListener g) {
 		listenerList.add(g);
 	}
 	
 	// removes people that don't want to listen to the game
-	public synchronized void removeGameListener(GameListener g) {
+	public synchronized void removeGameListener(GameModifiedListener g) {
 		listenerList.remove(g);
 	}
 	
@@ -41,12 +41,12 @@ public class GameSystem {
 	
 	// announce the game status to all that want to listen (GameListeners)
 	protected void announceGameStatus(GameModifiedEvent e) {
-		for (GameListener g : listenerList) g.commandProcessed(e);
+		for (GameModifiedListener g : listenerList) g.commandProcessed(e);
 	}
 	
 	// announce the game has ended :(
 	protected void announceGameEnded() {
-		for (GameListener g : listenerList) g.endGame();
+		for (GameModifiedListener g : listenerList) g.gameEnded();
 	}
 	
 	// This is just for checking purposes to see if any of the buttons still interact with the game when this function is true

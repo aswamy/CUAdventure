@@ -20,7 +20,7 @@ import javax.swing.ListSelectionModel;
  */
 
 
-public class InventoryFrame extends JFrame implements GameListener {
+public class InventoryFrame extends JFrame implements GameModifiedListener {
 
 	private static final long serialVersionUID = -9185125079205946734L;
 	
@@ -60,7 +60,7 @@ public class InventoryFrame extends JFrame implements GameListener {
 	}
 
 	@Override
-	public void endGame() {
+	public void gameEnded() {
 	}
 	
 	/*
