@@ -1,4 +1,4 @@
-package zuulproject.model.itemholders;
+package zuulproject.model.itemholder;
 
 import zuulproject.model.innercontroller.*;
 import java.util.*;

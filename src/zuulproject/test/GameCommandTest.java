@@ -5,7 +5,7 @@ import zuulproject.model.innercontroller.*;
 //import zuulproject.model.innercontroller.battle.*;
 //import zuulproject.model.innercontroller.battle.innerbattlecontroller.*;
 //import zuulproject.model.item.*;
-import zuulproject.model.itemholders.*;
+import zuulproject.model.itemholder.*;
 //import zuulproject.event.*;
 //import zuulproject.outercontroller.*;
 //import zuulproject.view.*;

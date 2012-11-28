@@ -1,4 +1,4 @@
-package zuulproject.model.itemholders;
+package zuulproject.model.itemholder;
 
 /**
  * The monster class is the Player's most annoying obsticle that dwells

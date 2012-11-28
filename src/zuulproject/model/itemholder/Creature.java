@@ -1,4 +1,4 @@
-package zuulproject.model.itemholders;
+package zuulproject.model.itemholder;
 
 /**
  * Creature a superclass for the monster and player and whoever that will be "living" in the world of Zuul

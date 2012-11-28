@@ -2,7 +2,7 @@ package zuulproject.model;
 
 import zuulproject.model.innercontroller.*;
 import zuulproject.model.item.*;
-import zuulproject.model.itemholders.*;
+import zuulproject.model.itemholder.*;
 import zuulproject.model.innercontroller.battle.*;
 
 /**

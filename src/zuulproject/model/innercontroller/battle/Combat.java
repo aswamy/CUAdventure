@@ -2,7 +2,7 @@ package zuulproject.model.innercontroller.battle;
 
 import zuulproject.model.innercontroller.battle.innerbattlecontroller.*;
 import zuulproject.model.innercontroller.*;
-import zuulproject.model.itemholders.*;
+import zuulproject.model.itemholder.*;
 
 import java.util.Random;
 

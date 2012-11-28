@@ -2,7 +2,7 @@ package zuulproject.view.graphicalview;
 
 import zuulproject.model.*;
 import zuulproject.model.innercontroller.*;
-import zuulproject.model.itemholders.*;
+import zuulproject.model.itemholder.*;
 
 import java.awt.*;
 import javax.swing.*;
