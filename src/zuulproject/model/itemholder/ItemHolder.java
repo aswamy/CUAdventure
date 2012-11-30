@@ -9,7 +9,6 @@ import java.util.*;
  */
 public abstract class ItemHolder {
 
-	private static final String NO_ITEMS = " -Empty-";
 	protected List<Item> items;
 	protected List<Item> removedItems; // for undo purposes; E.K
     
@@ -34,13 +33,8 @@ public abstract class ItemHolder {
         		
         	}
     }
-    /**
-     * Accessor for the removed Items
-     * @return List<Items> removedItems
-     * @author Ehsan Karami
-     */
-    public List<Item> getRemovedItems()
-    {
+
+    public List<Item> getRemovedItems() {
     	return this.removedItems;
     }
     
@@ -57,21 +51,7 @@ public abstract class ItemHolder {
     public void clearItemList() {
         items = new ArrayList<Item>();
     }
-    
-    /*
-     * Prints out the list of items that this object is carrying
-     */
-    public String getAllItems() {
-        String allItems = new String();
-        Iterator<Item> iterator = items.iterator(); // Fixed the warning by adding the generic type, <Item>; E.K
-        
-        while(iterator.hasNext()) {
-            allItems = allItems + "  " + iterator.next();
-        }
-        if (allItems.length()==0) allItems = NO_ITEMS;
-        return allItems;
-    }
-    
+
     // gets the entire itemlist
     public List<Item> getItemList() {
         return items;

@@ -1,9 +1,16 @@
 package zuulproject.model.innercontroller.battle;
 
+import zuulproject.event.GameBattleChangeEvent;
+import zuulproject.event.GameBattleInfoEvent;
+import zuulproject.event.GameChangeListener;
+import zuulproject.event.GameEvent;
+import zuulproject.event.GameEventListener;
 import zuulproject.model.innercontroller.battle.innerbattlecontroller.*;
 import zuulproject.model.innercontroller.*;
 import zuulproject.model.itemholder.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -14,104 +21,111 @@ import java.util.Random;
 
 public class Combat {
 	
-	public static final String FIGHT_WON = "\nYou have won the battle! You continue...";
-	public static final String NEW_LINE = "\n";	
 	private Parser parser;
     private Player player;
     private Monster monster;
 
+    private List<GameChangeListener> listenerList;
+    
     public Combat(Player p1, Monster m1, Parser p) {
         player = p1;
         monster = m1;
         parser = p;
-    }
     
+        listenerList = new ArrayList<>();
+    }
+
+	public synchronized void addGameListener(GameChangeListener g) {
+		listenerList.add(g);
+	}
+	
+	// removes people that don't want to listen to the game
+	public synchronized void removeGameListener(GameChangeListener g) {
+		listenerList.remove(g);
+	}
+	
+	public synchronized void addGameListenerList(List<GameChangeListener> g) {
+		listenerList.addAll(g);
+	}
+    
+	protected void announceGameBattleInfo(GameBattleInfoEvent e) {
+		for (GameChangeListener g : listenerList) {
+			if (g instanceof GameEventListener) ((GameEventListener)g).gameBattleInfoRequested(e);
+		}
+	}
+	
+	protected void announceGameBattleChange(GameBattleChangeEvent e) {
+		for (GameChangeListener g : listenerList)
+			g.gameBattleCmdProcessed(e);
+	}
+	
+	protected void announceGameBattleEnded(GameEvent e) {
+		for (GameChangeListener g : listenerList)
+			g.gameBattleEnded(e);
+	}
+	
     // processes the user's input and sends it off to a function that processes the command
-    public String fight(String userInput) {
-    	String fightStatus = "";
+    public void fight(String userInput) {
         BattleCommand bCommand = parser.getUserBattleCommand(userInput);
-        fightStatus += processBattleCmd(bCommand);
+        processBattleCmd(bCommand);
         if (monster.isDead()) {
-        	fightStatus += "Items dropped by monster:\n" + monster.getAllItems();
         	player.getRoom().removeMonster();
-        	fightStatus += FIGHT_WON;
+        	announceGameBattleEnded(new GameEvent(this));
         }
-    	return fightStatus;
     }
     
     // reads the command, and depending on the type of command, calls a function do deal with it
-    private String processBattleCmd(BattleCommand command) {
+    private void processBattleCmd(BattleCommand command) {
     	BattleCommandTypes commandWord = command.getCommandWord();
-    	String s = "";
    
         if (commandWord == BattleCommandTypes.UNKNOWN) {
-            s += "Use proper battle commands. Type 'help' if you need assistance.";
+        	announceGameBattleInfo(new GameBattleInfoEvent(null, BattleCommandTypes.UNKNOWN));
         } else if (commandWord == BattleCommandTypes.FIGHT) {
-            s+= creaturesBattle(true, true);
+        	creaturesBattle(true, true);
+            announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.FIGHT, true));
+            System.out.println(player.getCurrentHP() + "+" + monster.getCurrentHP());
         } else if (commandWord == BattleCommandTypes.IDLE) {
-            s+= "You used Splash. It does nothing." + NEW_LINE;
-            s+= creaturesBattle(false, true);
+        	creaturesBattle(false, true);
+            announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.IDLE, true));
         } else if (commandWord == BattleCommandTypes.STATUS) {
-        	s+= player.creatureHP();
-        	s+=NEW_LINE;
-        	s+= monster.creatureHP();
+        	announceGameBattleInfo(new GameBattleInfoEvent(this, BattleCommandTypes.STATUS));
         } else if (commandWord == BattleCommandTypes.FLEE) {
-            s+= playerFlees();
+            boolean commandStatus = playerFlees();
+            announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.FLEE, commandStatus));
         } else if (commandWord == BattleCommandTypes.HELP) {
-            s+= dspBattleHelp();
+            announceGameBattleInfo(new GameBattleInfoEvent(this.parser.getCommandWords().getBattleCommandList(), BattleCommandTypes.HELP));
         }
-    	return s;
     }
     
     // when called, gives the user a 1/3 chance of fleeing
     /* if flee successful (does a undo to go back to room - the reason it undoes instead of just "move_back"
      * is because we don't want to undo a fight (so by undoing, it removes it from the stack))
      */
-    private String playerFlees() {
-    	String playerFleeStatus = "";
+    private boolean playerFlees() {
         Random generator = new Random();
     	int escape = generator.nextInt(3);
         
         if(escape==0) {
-            playerFleeStatus += "You have fled!";
-            playerFleeStatus += player.playerMove(new Command(CommandTypes.GO, "back"));
-        } else {
-            playerFleeStatus += "Your flee attempt was unsuccessful!";
-            playerFleeStatus += creaturesBattle(false, true);
-        }    	
-    	return playerFleeStatus; 
+            player.playerMove(new Command(CommandTypes.GO, "back"));
+            return true;
+        }
+        creaturesBattle(false, true);
+        return false;
     }
     
     // Takes two creatures, and makes them fight each other
-    private String creatureAttacks(Creature attacker, Creature defender) {
-        String displayFightStatus = "";
+    private void creatureAttacks(Creature attacker, Creature defender) {
     	Random generator = new Random();
         int damageDone = attacker.totalAttack() + generator.nextInt((2*attacker.getDamageRange())+1) - attacker.getDamageRange();
         defender.reduceHP(damageDone);
-        displayFightStatus += attacker.getName() + " has done " + damageDone + " damage!\n";
-        displayFightStatus += defender.creatureHP() + NEW_LINE;
-        
-        return displayFightStatus;
     }
     
     // Takes a boolean value to tell whether player and monster is attacking, or only one, or none
-    private String creaturesBattle(boolean playerFights, boolean monsterFights) {
-    	String displayFightTurn = "";
+    private void creaturesBattle(boolean playerFights, boolean monsterFights) {
         if (playerFights) {
-        	displayFightTurn += creatureAttacks(player, monster);
-        	if(monster.isDead()) return displayFightTurn;
+        	creatureAttacks(player, monster);
+        	if(monster.isDead()) return;
         }
-        if (monsterFights)
-        	displayFightTurn += creatureAttacks(monster, player);
-        return displayFightTurn;
-    }
-    
-    /**
-     * A procedure to help the player decide what to do during a battle 
-     */
-    private String dspBattleHelp() {
-    	String s = "You are currently in a battle.\nYou cannot move past this room until you kill the monster.\n";
-    	s+= "Your command words are:\n" + parser.showAllBattleCommands();
-    	return s;
+        if (monsterFights) creatureAttacks(monster, player);
     }
 }

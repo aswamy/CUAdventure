@@ -1,5 +1,6 @@
 package zuulproject.model.itemholder;
 
+import zuulproject.event.*;
 import zuulproject.model.item.*;
 import zuulproject.model.innercontroller.*;
 import java.util.*;
@@ -28,6 +29,8 @@ public class Player extends Creature{
     private Stack<Command> moves; //Keeps track of the Commands that can be undone,
     private Stack<Command> undoMoves;// for redo purposes;
     
+    private List<GameChangeListener> listenerList;
+    
     public Player() {
         name = PLAYER_NAME;
         currentRoom = null;
@@ -35,6 +38,8 @@ public class Player extends Creature{
         moves = new Stack<Command>();
         undoMoves = new Stack<Command>();
 
+        listenerList = new ArrayList<GameChangeListener>();
+        
         attackPower = ATK_POWER;
         bonusAttack = BONUS_ATK;
         damageRange = DMG_RANGE;
@@ -42,7 +47,33 @@ public class Player extends Creature{
         currentHP = PLAYER_HP;
         equippedItem = null;
     }
+
+	public synchronized void addGameListenerList(List<GameChangeListener> g) {
+		listenerList.addAll(g);
+	}
     
+    // Add people who want to listen to the game
+	public synchronized void addGameListener(GameChangeListener g) {
+		listenerList.add(g);
+	}
+	
+	// removes people that don't want to listen to the game
+	public synchronized void removeGameListener(GameChangeListener g) {
+		listenerList.remove(g);
+	}
+
+	// announce the game change has occured to all that want to listen
+	protected void announceGameChange(GameChangeEvent e) {
+		for (GameChangeListener g : listenerList) g.gameCmdProcessed(e);
+	}
+	
+	// announce that info is requested by the user
+	protected void announceGameInfo(GameInfoEvent e) {
+		for (GameChangeListener g : listenerList) {
+			if (g instanceof GameEventListener) ((GameEventListener)g).gameInfoRequested(e);
+		}
+	}
+       
     public int totalAttack() {
         return attackPower + bonusAttack;
     }
@@ -66,26 +97,24 @@ public class Player extends Creature{
      * Undo portion is written entirely by Ehsan
      */
     
-    public String playerMove(Command command) {
+    public boolean playerMove(Command command) {
         // Try to leave current room.
     	Room nextRoom = null;
 
         if(!command.hasSecondWord()) {
-            // if there is no second word, we don't know where to go...
-            return "Go where?";
+            return false;
         }
  
         String room = command.getSecondWord();
         nextRoom = currentRoom.getExitRoom(room);
-        
-        
+                
         if (nextRoom == null) {
             if(!room.equalsIgnoreCase("back")) // undo command E.K
             {
             	nextRoom = currentRoom;  // for refactoring the Else to get a more efficient Code for adding the Undo Command ( Go back). E.K
-                return "There is no door!";
+                return false;
             }
-        } 
+        }
 
         //else { else has been refactored.
         if(room.equalsIgnoreCase("back"))
@@ -94,7 +123,7 @@ public class Player extends Creature{
             if(steps.size()<1)
             {
                 nextRoom=currentRoom;
-                return "** You are where you started.";
+                return false;
             } else {
                 nextRoom = steps.pop();
             }
@@ -106,14 +135,14 @@ public class Player extends Creature{
     
         if (currentRoom.isExitable()) {
             if (nextRoom == null) {
-                return "There is no door!\n";
+                return false;
             } else {
                 if(nextRoom.isEnterable()) currentRoom = nextRoom;
-                else return Room.unenterable;
-                return playerLook();
+                else return false;
+                return true;
             }
         } else {
-            return Room.unexitable;
+            return true;
         }
     }   
     
@@ -124,11 +153,11 @@ public class Player extends Creature{
      * This might be moved to player class soon
      */
     
-    public String playerPickup (Command command) {
+    public boolean playerPickup (Command command) {
         Item removingItem = null;
         
         if(!command.hasSecondWord()) {
-        	return "Pickup what?";
+        	return false;
         }
         
         String itemName = command.getSecondWord();
@@ -140,8 +169,8 @@ public class Player extends Creature{
         if (!(removingItem==null)) {
             currentRoom.removeItem(removingItem);
             insertItem(removingItem);
-            return removingItem + " has been picked up";
-        } else return "Item doesn't exist";
+            return true;
+        } else return false;
    }
    /**
     * This method is the reverse of playerPickup()
@@ -150,40 +179,26 @@ public class Player extends Creature{
     * @return String results
     * @author Ehsan Karami 
     */
-   public String playerDrop (Command command) { // For undo purposes, E.K
+   public void playerDrop (Command command) { // For undo purposes, E.K
         Item removingItem = null;
-        if(!command.hasSecondWord())
-        	return "Drop what?";
         String itemName = command.getSecondWord();        
-        /*for (Item item : this.getItemList())
-            if (item.getName().equalsIgnoreCase(itemName)) // changing equals() to equalsIgnoreCase() to make the game easier. E.K
-                removingItem = item;
-          */ // using the items equals method; E.K
         if(this.getItemList().contains(new Item(itemName)))
         	removingItem = getItemList().get(getItemList().indexOf(new Item(itemName)));
         if (!(removingItem==null)) {
             this.removeItem(removingItem);
             currentRoom.insertItem(removingItem);
-            return removingItem + " has been droped";
-        } else return "You are not carrying a " + itemName;
+        }
    }
-
-    public String dspPlayerInventory() {
-    	String s = "Inventory:\n";
-        s+= getAllItems();	
-    	return s;
-    }
     
     /*
      * Player wields and item to become more powerful (but the item will still be in the inventory)
      */
-    
-    public String playerEquip(Command command) {
+    public boolean playerEquip(Command command) {
         Weapon newWeapon = null;
         String itemName;
         
         if(!command.hasSecondWord()) {
-            return "Equip what?";
+            return false;
         }
         
         itemName = command.getSecondWord();
@@ -197,24 +212,25 @@ public class Player extends Creature{
         if (!(newWeapon==null)) {
             equippedItem = newWeapon;
             bonusAttack = newWeapon.getWeaponAtk();
-            return itemName + " has been equipped!";
-        } else return "Item cannot be equipped or weapon doesn't exist!";
-   	
+            return true;
+        } else return false;
     }
     
-    public String playerDeequip() {
-    	bonusAttack = 0;
-        equippedItem = null;
-        return "Item has been deequipped.";
+    public boolean playerDeequip() {
+    	if (!(equippedItem == null)) {
+    		bonusAttack = 0;
+    		equippedItem = null;
+    		return true;
+    	}
+        return false;
     }
 
-    public String playerUse(Command command) {
-    	String s = "";
+    public boolean playerConsume(Command command) {
         Consumable consume = null;
         String itemName;
         
         if(!command.hasSecondWord()) {
-            return "Use what?";
+            return false;
         }
         
         itemName = command.getSecondWord();
@@ -228,22 +244,18 @@ public class Player extends Creature{
             if (consume.getHealthHealed()>(maxHP - currentHP))healthHealed = maxHP-currentHP;
             else healthHealed = consume.getHealthHealed();            
             currentHP += healthHealed;
-            
-            s = itemName + " has healed " + healthHealed +"HP!\n";
-            s += creatureHP();
             removeItem(consume);
-        } else s= "Item cannot be consumed or consumable doesn't exist!";
-    	
-    	return s;
+            return true;
+        }
+    	return false;
     }
 
-    public String playerApply(Command command) {
-    	String s = "";
+    public boolean playerApply(Command command) {
         Powerup powerup = null;
         String itemName;
         
         if(!command.hasSecondWord()) {
-            return "Apply what?";
+        	return false;
         }
         
         itemName = command.getSecondWord();
@@ -259,29 +271,16 @@ public class Player extends Creature{
             attackPower += attackBoosted;
             maxHP += healthBoosted;
             currentHP += healthBoosted;
-            
-            s = itemName + " has boosted " + attackBoosted + " attack and  " + healthBoosted +"HP!\n";
-            s += creatureStatus();
             removeItem(powerup);
-        } else s= "Item cannot be applied or Powerup doesn't exist!";
-    	
-    	return s;
+            return true;
+        }
+    	return false;
     }
-    /**
-     * this method is the reverse of the apply method
-     * @param command
-     * @return String results
-     * @author Ehsan Karami
-     */
-    public String playerUndoApply(Command command) {
-    	String s = "";
+
+    public void playerUndoApply(Command command) {
         Powerup powerup = null;
         Item itm;
-        
-        if(!command.hasSecondWord()) {
-            return "Apply what?";
-        }
-        
+                
         itm = new Item(command.getSecondWord());
         if(removedItems.contains(itm))
         {
@@ -293,22 +292,17 @@ public class Player extends Creature{
             attackPower -= powerup.getAtkIncrease();
             maxHP -= powerup.getHPIncrease();
             currentHP -= powerup.getHPIncrease();
-            
-            s = itm.getName() + " has returned to your inventory and your attack reduced by " + powerup.getAtkIncrease() + " and your HP reduced by  " + powerup.getHPIncrease() +"!\n";
-            s += creatureStatus();
             this.insertItem(powerup);
-        } else s= "Item was not found or was not applied";
-    	
-    	return s;
+        }
     }
         
-    public String playerExamine(Command command) {
+    public boolean playerExamine(Command command) {
         Item examine = null;
         String itemName;
         List<Item> tempList = new ArrayList<Item>();
         
         if(!command.hasSecondWord()) {
-            return "Item doesn't exist in your inventory or the room";
+            return false;
         }
         
         itemName = command.getSecondWord();
@@ -322,142 +316,122 @@ public class Player extends Creature{
             }
         }
         if (!(examine==null)) {
-            return itemName + ": " + examine.getDescription();
-        } else return "Item cannot be examined or item doesn't exist!";
-    }
-    
-    /**
-     * See what the room is about (its description), what it has, and what are it's exits
-     */
-    
-    public String playerLook() {
-    	String s = "";
-    	
-    	s += "You are " + currentRoom.getDescription() + "\n"
-    			+ "Items:\n";
-        s+= currentRoom.getAllItems() + "\n";
-        s+= "Exits:\n" +
-        		currentRoom.getAllExits();
-    	return s;
+            return true;
+        }
+        return false;
     }
 
     public boolean inBattle() {
     	return currentRoom.hasMonster();
     }
     
-    public String processPlayerCmd(Command command) {
-    	String temp = "";
+    public void processPlayerCmd(Command command) {
     	CommandTypes commandWord = command.getCommandWord();
-    	boolean canUndo = false; // E.K
+    	boolean canUndo = false;
     	
         if (commandWord == CommandTypes.LOOK) {
-            temp = playerLook();
+            announceGameInfo(new GameInfoEvent(this.getRoom(), CommandTypes.LOOK));
         } else if (commandWord == CommandTypes.PICKUP) {
-            temp = playerPickup(command);
-        	canUndo = true;
+        	boolean commandSuccess = playerPickup(command);
+    		announceGameChange(new GameChangeEvent(this, CommandTypes.PICKUP, commandSuccess));
+        	if(commandSuccess) canUndo = true;
         } else if (commandWord == CommandTypes.INVENTORY) { 
-            temp = dspPlayerInventory();
+            announceGameInfo(new GameInfoEvent(this.getItemList(), CommandTypes.INVENTORY));
         } else if (commandWord == CommandTypes.CONSUME) { 
-            temp = playerUse(command);
+        	boolean commandSuccess = playerConsume(command);
+    		announceGameChange(new GameChangeEvent(this, CommandTypes.CONSUME, commandSuccess));
+        	if(commandSuccess) canUndo = true;
         } else if (commandWord == CommandTypes.APPLY) { 
-            temp = playerApply(command);
-        	canUndo = true;
+        	boolean commandSuccess = playerApply(command);
+    		announceGameChange(new GameChangeEvent(this, CommandTypes.APPLY, commandSuccess));
+        	if(commandSuccess) canUndo = true;
         } else if (commandWord == CommandTypes.STATUS) {
-            temp = creatureStatus();
+            announceGameInfo(new GameInfoEvent(this, CommandTypes.STATUS));
         } else if (commandWord == CommandTypes.EQUIP) {
-            temp = playerEquip(command);
-        	canUndo = true;
+        	boolean commandSuccess = playerEquip(command);
+    		announceGameChange(new GameChangeEvent(this, CommandTypes.EQUIP, commandSuccess));
+        	if(commandSuccess) canUndo = true;
         } else if (commandWord == CommandTypes.DEEQUIP) {
-        	if(equippedItem != null) // E.K
-        	{
-        		command.setSecondWord(equippedItem.getName());
-        		temp = playerDeequip();
+        	boolean commandSuccess = playerDeequip();
+        	announceGameChange(new GameChangeEvent(this, CommandTypes.DEEQUIP, commandSuccess));
+        	if(commandSuccess) {
         		canUndo = true;
+        		command.setSecondWord(equippedItem.getName());
         	}
-        	else temp = "You dont have anything to deequip";
         } else if (commandWord == CommandTypes.EXAMINE) {
-            temp = playerExamine(command);
+        	boolean commandSuccess = playerExamine(command);
+        	announceGameInfo(new GameConditionalInfoEvent(this, CommandTypes.EXAMINE, commandSuccess));
         } else if (commandWord == CommandTypes.GO) {
-        	temp = playerMove(command);
-        	canUndo = true;
-        } else if (commandWord == CommandTypes.UNDO)
-        	temp = undo();
-        else if (commandWord == CommandTypes.REDO)
-        	temp = redo();
+        	boolean commandSuccess = playerMove(command);
+        	announceGameChange(new GameChangeEvent(this, CommandTypes.GO, commandSuccess));
+        	if(commandSuccess) canUndo = true;
+        } else if (commandWord == CommandTypes.UNDO) {
+        	boolean commandSuccess = undo();
+        	announceGameChange(new GameChangeEvent(this, CommandTypes.UNDO, commandSuccess));
+    	} else if (commandWord == CommandTypes.REDO) {
+        	boolean commandSuccess = redo();
+        	announceGameChange(new GameChangeEvent(this, CommandTypes.REDO, commandSuccess));
+    	}
         if(canUndo)
         {
         	moves.push(command);
         	undoMoves.clear();
         }
-        
-    	return temp;
     }
     
-    public String undo()
-    {
-    	if(moves.empty()) return "There is nothing to Undo.";
-    	String temp = "";
+    public boolean undo() {
+    	if(moves.empty()) return false;
     	Command cmd = moves.pop();
     	switch(cmd.getCommandWord())
     	{
     	case APPLY:
-			temp = playerUndoApply(cmd);
+			playerUndoApply(cmd);
 			break;
     	case GO:
-    		temp = playerMove(new Command(CommandTypes.GO, "back"));
+    		playerMove(new Command(CommandTypes.GO, "back"));
     		break;
     	case EQUIP:
-    		temp = playerDeequip();
+    		playerDeequip();
     		break;
     	case DEEQUIP:
-    		temp = playerEquip(cmd);
+    		playerEquip(cmd);
     		break;
     	case PICKUP:
-    		temp = playerDrop(cmd);
+    		playerDrop(cmd);
     		break;
-    	default: 
-    		temp = "Cannot Undo!";
-    		break;
+    	default:
+    		return false;
     	}
     	undoMoves.push(cmd);
     	
-    	return temp;
+    	return true;
     }
     
-    public String redo()
-    {
-    	if(undoMoves.empty()) return "There is nothing to Redo.";
-    	String temp = "";
+    public boolean redo() {
+    	if(undoMoves.empty()) return false;
     	Command cmd = undoMoves.pop();
     	switch(cmd.getCommandWord())
     	{
     	case APPLY:
-			temp = playerApply(cmd);
+			playerApply(cmd);
 			break;
     	case GO:
-    		temp = playerMove(cmd);
+    		playerMove(cmd);
     		break;
     	case EQUIP:
-    		temp = playerEquip(cmd);
+    		playerEquip(cmd);
     		break;
     	case DEEQUIP:
-    		temp = playerDeequip();
+    		playerDeequip();
     		break;
     	case PICKUP:
-    		temp = playerPickup(cmd);
+    		playerPickup(cmd);
     		break;
     	default: 
-    		temp = "Cannot Redo!";
-    		break;
+    		return false;
     	}
-    	
     	moves.push(cmd);
     	
-    	return temp;
-    }
-    
-    public String creatureStatus() {
-    	return creatureHP() + "\n" + name + "'s attack power is " + attackPower + "+" + bonusAttack;
-    }
-    
+    	return true;
+    }    
 }

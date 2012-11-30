@@ -36,14 +36,14 @@ public class CommandWords
     // returns the command type from string
     public CommandTypes getCommandWord(String commandWord) {
         CommandTypes command = validCommands.get(commandWord);
-        if(command != null) return command;
+        if(!(command == null)) return command;
         else return CommandTypes.UNKNOWN;
     }
 
-    // returnst the battlecommand type from string
+    // returns the battlecommand type from string
     public BattleCommandTypes getBattleCommandWord(String bCommandWord) {
         BattleCommandTypes bCommand = validBattleCommands.get(bCommandWord);
-        if(bCommand != null) return bCommand;
+        if(!(bCommand == null)) return bCommand;
         else return BattleCommandTypes.UNKNOWN;
     }
     

@@ -41,11 +41,6 @@ public abstract class Creature extends ItemHolder {
         else currentHP = 0;
     }
     
-    // returns a string representation of the creatures HP
-    public String creatureHP() {
-    	return name + "'s current HP is " + currentHP + "/" + maxHP;
-    }
-    
     // returns the hp of the creature
     public int getCurrentHP() {
     	return currentHP;
@@ -55,7 +50,4 @@ public abstract class Creature extends ItemHolder {
     public int getMaxHP() {
     	return maxHP;
     }
-    
-    // returns a string representation of the creatures status
-    public abstract String creatureStatus();
 }

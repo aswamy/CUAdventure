@@ -14,7 +14,7 @@ import java.awt.event.*;
  * so it gets updated when any changes occur
  */
 
-public class GameView extends JFrame implements GameModifiedListener {
+public class GameView extends JFrame implements GameEventListener {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -282,13 +282,6 @@ public class GameView extends JFrame implements GameModifiedListener {
         messageDisplayer.setCaretPosition(messageDisplayer.getDocument().getLength());		
 	}
 	
-	// update view when game changes	
-	public void commandProcessed(GameModifiedEvent e) {
-		this.drawing2D.repaint();
-		this.drawing3D.repaint();
-		dspMessage(e.getGameStatus());
-	}
-	
 	// disable all buttons
 	public void gameEnded() {
 		disableCommandPanel();
@@ -322,12 +315,64 @@ public class GameView extends JFrame implements GameModifiedListener {
 		inventoryView = new InventoryFrame(this, game_model);
 		roomItemView = new RoomItemFrame(this, game_model);
 	}
-	
+
+	@Override
+	public void gameBegins(GameEvent e) {
+		createGameFrames();
+		createCommandListFrame();
+		((Game)e.getSource()).addGameListener(this);
+		((Game)e.getSource()).addGameListener(getInventoryView());
+		((Game)e.getSource()).addGameListener(getRoomItemView());
+		((Game)e.getSource()).addGameListener(getCommandListView());
+	}
+
+	@Override
+	public void gameCmdProcessed(GameChangeEvent e) {
+		this.drawing2D.repaint();
+		this.drawing3D.repaint();
+	}
+
+	@Override
+	public void gameBattleCmdProcessed(GameBattleChangeEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameEnded(GameOverEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameBattleEnded(GameEvent e) {
+		this.drawing2D.repaint();
+		this.drawing3D.repaint();
+	}
+
+	@Override
+	public void gameBattleBegins(GameEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameInfoRequested(GameInfoEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameBattleInfoRequested(GameBattleInfoEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 	// main method, sets up the game, controller, and view
 	public static void main(String[] args) {
 		GameSystem g = new GameSystem();
 		GameView v= new GameView(g);
 		g.addGameListener(v);
+		
 		@SuppressWarnings("unused")
 		GameController c = new GameController(v, g);
 		

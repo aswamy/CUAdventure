@@ -12,43 +12,33 @@ import java.util.List;
 
 public class GameSystem {
 	private Game game;
-	private String gameStatus;
-	private List<GameModifiedListener> listenerList;
+	private List<GameChangeListener> listenerList;
 	
 	public GameSystem() {
 		game = null;
-		gameStatus = new String();
-		listenerList = new ArrayList<GameModifiedListener>();
+		listenerList = new ArrayList<>();
 	}
 	
 	// Add people who want to listen to the game
-	public synchronized void addGameListener(GameModifiedListener g) {
+	public synchronized void addGameListener(GameChangeListener g) {
 		listenerList.add(g);
 	}
 	
 	// removes people that don't want to listen to the game
-	public synchronized void removeGameListener(GameModifiedListener g) {
+	public synchronized void removeGameListener(GameChangeListener g) {
 		listenerList.remove(g);
 	}
 	
+	// announce the game has started
+	protected void announceGameBegins(GameEvent e) {
+		for (GameChangeListener g : listenerList) g.gameBegins(e);
+	}
+
 	// process a user input send as a string
 	public void processCmd(String s) {
-		if (gameFinished()) gameStatus = Game.GAME_END;
-		else gameStatus = game.playGame(s);
-		announceGameStatus(new GameModifiedEvent(this));
-		if (gameFinished()) announceGameEnded();
+		if (!(gameFinished())) game.playGame(s);
 	}
-	
-	// announce the game status to all that want to listen (GameListeners)
-	protected void announceGameStatus(GameModifiedEvent e) {
-		for (GameModifiedListener g : listenerList) g.commandProcessed(e);
-	}
-	
-	// announce the game has ended :(
-	protected void announceGameEnded() {
-		for (GameModifiedListener g : listenerList) g.gameEnded();
-	}
-	
+		
 	// This is just for checking purposes to see if any of the buttons still interact with the game when this function is true
 	private boolean gameFinished() {
 		return game.isGameOver();
@@ -57,10 +47,9 @@ public class GameSystem {
 	// Creates a brand new Zuul game and initializes all the rooms, and the player
 	public void newGame() {
 		Game newGame = new Game();
-		newGame.initializeGame();
+		newGame.addGameListenerList(listenerList);
 		game = newGame;
-		gameStatus = game.dspWelcome();
-		announceGameStatus(new GameModifiedEvent(this));
+		announceGameBegins(new GameEvent(this.getGame()));
 	}
 	
 	// Determines whether the game console is on, but no game is running
@@ -69,19 +58,8 @@ public class GameSystem {
 		return false;
 	}
 	
-	// returns the status of the game
-	public String getGameStatus() {
-		return gameStatus;
-	}
-	
-	// a String that contains the welcome message from the game
-	public String dspGameWelcome() {
-		return game.dspWelcome();
-	}
-	
 	// returns the game
-	public Game getGame()
-	{
+	public Game getGame() {
 		return game;
 	}
 }

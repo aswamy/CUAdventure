@@ -31,8 +31,4 @@ public class Monster extends Creature{
     public int totalAttack() {
     	return attackPower;
     }
-    
-    public String creatureStatus() {
-		return creatureHP() + "\n" + name + "'s attack power is " + attackPower;
-	}
 }

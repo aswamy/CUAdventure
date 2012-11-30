@@ -20,7 +20,7 @@ import javax.swing.ListSelectionModel;
  */
 
 
-public class RoomItemFrame extends JFrame implements GameModifiedListener {
+public class RoomItemFrame extends JFrame implements GameChangeListener {
 	
 	private static final long serialVersionUID = -8817821070075378882L;
 	
@@ -49,16 +49,36 @@ public class RoomItemFrame extends JFrame implements GameModifiedListener {
 	  	this.setSize(200, 300);
 	}
 
-	// when the model changes, this is called
-	@Override
-	public void commandProcessed(GameModifiedEvent e) {
+	public void refreshList() {
 		listModel.clear();
 		List<String> listContent = game.getGame().getPlayer().getRoom().getItemListString();
-		for (String s : listContent) listModel.addElement(s);
+		for (String s : listContent) listModel.addElement(s);		
 	}
 
 	@Override
-	public void gameEnded() {
+	public void gameBegins(GameEvent e) {
+		refreshList();
+	}
+
+	@Override
+	public void gameCmdProcessed(GameChangeEvent e) {
+		refreshList();
+	}
+
+	@Override
+	public void gameBattleCmdProcessed(GameBattleChangeEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void gameEnded(GameOverEvent e) {
+		listModel.clear();
+	}
+
+	@Override
+	public void gameBattleEnded(GameEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	// when a item in JList is clicked, it puts the string representation of the item in the commandbox
@@ -82,7 +102,6 @@ public class RoomItemFrame extends JFrame implements GameModifiedListener {
 
 		@Override
 		public void mouseReleased(MouseEvent arg0) {
-		}
-		
+		}	
 	}
 }

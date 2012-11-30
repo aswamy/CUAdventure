@@ -11,7 +11,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 
 /**
  * A frame that contains a JList full of all the possible commands the user can press on
@@ -19,7 +18,7 @@ import javax.swing.ListSelectionModel;
  * It implements GameListener because when the game changes (goes from battle mode to regular mode), the command words change
  */
 
-public class CommandListFrame extends JFrame implements GameModifiedListener {
+public class CommandListFrame extends JFrame implements GameChangeListener {
 	
 	private static final long serialVersionUID = 4682921453466334303L;
 
@@ -36,6 +35,19 @@ public class CommandListFrame extends JFrame implements GameModifiedListener {
 		listModel = new DefaultListModel<String>();
 		
 		//Get command words from the game
+		refreshList();
+		list = new JList<String>(listModel);
+		list.addMouseListener(new ListClickListener());
+		
+		scrollPane = new JScrollPane(list);
+		list.setVisible(true);
+		this.setTitle("CommandList");
+		this.setContentPane(scrollPane);
+	  	this.setSize(200, 300);
+	}
+
+	public void refreshList() {
+		listModel.clear();
 		List<String> listContent;
 		if (game.getGame().getPlayer().inBattle()) {
 			listContent = game.getGame().getParser().getCommandWords().getBattleCommandList();
@@ -46,41 +58,36 @@ public class CommandListFrame extends JFrame implements GameModifiedListener {
 		for (String s : listContent) {
 			if(!(s.equals("go"))) listModel.addElement(s);
 		}
-		list = new JList<String>(listModel);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setSelectedIndex(0);
-		list.addMouseListener(new ListClickListener());
-		
-		scrollPane = new JScrollPane(list);
-		list.setVisible(true);
-		this.setTitle("CommandList");
-		this.setContentPane(scrollPane);
-	  	this.setSize(200, 300);
 	}
-
+	
 	/*
 	 * Whenever a command is processed, the model will call this function, and the JList will be updated
 	 */
 	@Override
-	public void commandProcessed(GameModifiedEvent e) {
-		listModel.clear();
-		List<String> listContent;
-		if (game.getGame().getPlayer().inBattle()) {
-			listContent = game.getGame().getParser().getCommandWords().getBattleCommandList();
-		} else {
-			listContent = game.getGame().getParser().getCommandWords().getCommandList();
-		}
-
-		for (String s : listContent) listModel.addElement(s);
+	public void gameCmdProcessed(GameChangeEvent e) {
+		refreshList();
 	}
-	
-	/*
-	 * This is a required function when you implement GameListener - currently does nothing
-	 */
+		
 	@Override
-	public void gameEnded() {
+	public void gameBegins(GameEvent e) {
+		refreshList();
+	}
+
+	@Override
+	public void gameEnded(GameOverEvent e) {
+		listModel.clear();
 	}
 	
+	@Override
+	public void gameBattleCmdProcessed(GameBattleChangeEvent e) {
+		// currently, battle doesn't change the content of the itemholder		
+	}
+
+	@Override
+	public void gameBattleEnded(GameEvent e) {
+		refreshList();		
+	}
+		
 	/*
 	 * when an item in the Jlist is clicked, the item is entered into the command box in the main view
 	 */
@@ -105,7 +112,6 @@ public class CommandListFrame extends JFrame implements GameModifiedListener {
 
 		@Override
 		public void mouseReleased(MouseEvent arg0) {
-		}
-		
+		}	
 	}
 }

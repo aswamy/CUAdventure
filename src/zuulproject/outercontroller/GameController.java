@@ -56,11 +56,6 @@ public class GameController {
 			view.enableCommandPanel();
 			view.enableGameButtons();
 			model.newGame();
-			view.createGameFrames();
-			view.createCommandListFrame();
-			model.addGameListener(view.getInventoryView());
-			model.addGameListener(view.getRoomItemView());
-			model.addGameListener(view.getCommandListView());
 		}
 	}
 	

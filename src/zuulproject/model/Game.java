@@ -1,5 +1,9 @@
 package zuulproject.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import zuulproject.event.*;
 import zuulproject.model.innercontroller.*;
 import zuulproject.model.item.*;
 import zuulproject.model.itemholder.*;
@@ -32,13 +36,11 @@ import zuulproject.model.innercontroller.battle.*;
  */
 
 public class Game {
-	
-	public static final String GAME_END = "Game Over! 'Game > New Game' to start a new game.";
-	public static final String NEW_LINE = "\n";
-	
 	private boolean gameOver;
     private Parser parser;
     private Player p1;
+
+    private List<GameChangeListener> listenerList;
     
     /**
      * Create the game and initialise its internal map.
@@ -47,8 +49,45 @@ public class Game {
         parser = new Parser();
         p1 = new Player();
         gameOver = true;
+    
+        listenerList = new ArrayList<GameChangeListener>();
+        initializeGame();
     }
 
+    public synchronized void addGameListenerList(List<GameChangeListener> g) {
+    	listenerList.addAll(g);
+    	p1.addGameListenerList(g);
+    }
+    
+	public synchronized void addGameListener(GameChangeListener g) {
+		listenerList.add(g);
+		p1.addGameListener(g);
+	}
+	
+	// removes people that don't want to listen to the game
+	public synchronized void removeGameListener(GameChangeListener g) {
+		listenerList.remove(g);
+		p1.removeGameListener(g);
+	}
+
+	// announce the game change has occured to all that want to listen
+	protected void announceGameChange(GameChangeEvent e) {
+		for (GameChangeListener g : listenerList) g.gameCmdProcessed(e);
+	}
+	
+	// announce that info is requested by the user
+	protected void announceGameInfo(GameInfoEvent e) {
+		for (GameChangeListener g : listenerList) {
+			if (g instanceof GameEventListener) ((GameEventListener)g).gameInfoRequested(e);
+		}
+	}
+	
+	protected void announceGameBattle(GameEvent e) {
+		for (GameChangeListener g : listenerList) {
+			if (g instanceof GameEventListener) ((GameEventListener)g).gameBattleBegins(e);
+		}
+	}
+    
     /**
      * Create all the rooms and link their exits together.
      */    
@@ -88,38 +127,22 @@ public class Game {
     /**
      *  processes user inputs and converts it into a command that the game can read (battle command or regular command)
      */    
-    public String playGame(String userInput) {
-    	String gameStatus = "";
+    public void playGame(String userInput) {
     	if (!(p1.inBattle())) {
     		Command command = parser.getUserCommand(userInput);
-    		gameStatus += processGameCmd(command);
-    		if(p1.inBattle()){
-    			gameStatus += "\nYou have encountered a " + p1.getRoom().getMonster().getName();
+    		processGameCmd(command);
+    		if(p1.inBattle()) {
+    			announceGameBattle(new GameEvent(p1.getRoom().getMonster()));
     		}
     	} else {
     		Combat combat = new Combat(p1, p1.getRoom().getMonster(), parser);
-    		gameStatus += combat.fight(userInput);
+    		combat.addGameListenerList(listenerList);
+    		combat.fight(userInput);
     	}
 		if (p1.isDead()) {
-			gameStatus += "You have died :(\n" + GAME_END;
-			gameOver = true;
+            gameOver = true;
+            announceGameInfo(new GameInfoEvent(null, CommandTypes.QUIT));
 		}
-    	return gameStatus;
-    }
-    
-    /**
-     * Print out the opening message for the player.
-     */
-    public String dspWelcome() {
-    	String s = "";
-    	s += "\n---------------------------------------\n"
-    			+ "Welcome to the World of PokeZuul!"
-    			+ "\nPrepare for a kick-butt adventure that will block your socks off!"
-    			+ "\nType '" + CommandTypes.HELP + "' if you need help."
-    			+ NEW_LINE + NEW_LINE
-    			+ p1.playerLook();
-    	
-    	return s;
     }
 
     /**
@@ -127,39 +150,21 @@ public class Game {
      * @param command The command to be processed.
      * @return true If the command ends the game, false otherwise.
      */
-    private String processGameCmd(Command command) {
+    private void processGameCmd(Command command) {
     	CommandTypes commandWord = command.getCommandWord();
-    	String s = "";
     	
         if (commandWord == CommandTypes.UNKNOWN) {
-            return "I don't know what you mean...";
+            announceGameInfo(new GameInfoEvent(null, CommandTypes.UNKNOWN));
         } else if (commandWord == CommandTypes.HELP) {
-            return dspHelp();
+            announceGameInfo(new GameInfoEvent(this.getParser().getCommandWords().getCommandList(), CommandTypes.HELP));
         } else if (commandWord == CommandTypes.QUIT) {
             gameOver = true;
-        	return "You have quit the game" + NEW_LINE + GAME_END;
+            announceGameInfo(new GameInfoEvent(null, CommandTypes.QUIT));
         } else {
-            s = p1.processPlayerCmd(command);
+            p1.processPlayerCmd(command);
         }
-        return s;
     }
-    
-    /**
-     * Print out some help information.
-     * Here we print some stupid, cryptic message and a list of the 
-     * command words.
-     */
-    
-    public String dspHelp() {
-    	String s = "";
-    	s += "You are lost. You are alone. You wander around at the university.\n"
-    			+ p1.playerLook()
-    			+ NEW_LINE
-    			+ "Your command words are:\n"
-    			+ parser.showAllCommands();
-    	return s;
-    }
-    
+
     /*
      * returns whether a game is over
      */
