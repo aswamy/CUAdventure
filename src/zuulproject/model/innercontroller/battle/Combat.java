@@ -64,6 +64,14 @@ public class Combat {
 			g.gameBattleEnded(e);
 	}
 	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public Monster getMonster() {
+		return monster;
+	}
+	
     // processes the user's input and sends it off to a function that processes the command
     public void fight(String userInput) {
         BattleCommand bCommand = parser.getUserBattleCommand(userInput);

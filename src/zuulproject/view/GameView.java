@@ -5,6 +5,8 @@ import zuulproject.event.GameOverEvent.GameResult;
 import zuulproject.model.*;
 import zuulproject.model.innercontroller.CommandTypes;
 import zuulproject.model.innercontroller.CommandWords;
+import zuulproject.model.innercontroller.battle.Combat;
+import zuulproject.model.innercontroller.battle.innerbattlecontroller.BattleCommandTypes;
 import zuulproject.model.item.*;
 import zuulproject.model.itemholder.*;
 import zuulproject.view.graphicalview.*;
@@ -297,6 +299,10 @@ public class GameView extends JFrame implements GameEventListener {
 		messageDisplayer.setCaretPosition(messageDisplayer.getDocument()
 				.getLength());
 	}
+	
+	public void refreshTextBox() {
+		messageDisplayer.setText("");
+	}
 
 	// disable all buttons
 	public void gameEnded() {
@@ -352,6 +358,8 @@ public class GameView extends JFrame implements GameEventListener {
 		((Game) e.getSource()).addGameListener(getRoomItemView());
 		((Game) e.getSource()).addGameListener(getCommandListView());
 		refreshViews();
+		refreshTextBox();
+		dspMessage(((Game)e.getSource()).getGameDescription());
 	}
 
 	@Override
@@ -398,39 +406,12 @@ public class GameView extends JFrame implements GameEventListener {
 		else if (command == CommandTypes.DEEQUIP)
 			s += "'deequip' (Must have weapon equipped)";
 		else if (command == CommandTypes.UNDO)
-			s += "'undo' (No moves to undo)";
+			s += "'undo' (No more moves to undo)";
 		else if (command == CommandTypes.REDO)
-			s += "'redo' (No moves to redo)";
+			s += "'redo' (No more moves to redo)";
 		else if (command == CommandTypes.EXAMINE)
 			s += "'examine [item name]'";
 		return s;
-	}
-	
-	@Override
-	public void gameBattleCmdProcessed(GameBattleChangeEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void gameEnded(GameOverEvent e) {
-		closeGameFrames();
-		if (e.getGameResult() == GameResult.LOSE) dspMessage(gameLose);
-		else if (e.getGameResult() == GameResult.WIN) dspMessage(gameWin);
-		dspMessage(gameEnd);
-		gameEnded();
-	}
-
-	@Override
-	public void gameBattleEnded(GameEvent e) {
-		this.drawing2D.repaint();
-		this.drawing3D.repaint();
-	}
-
-	@Override
-	public void gameBattleBegins(GameEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -463,7 +444,7 @@ public class GameView extends JFrame implements GameEventListener {
 	}
 
 	private String creatureStatus(Creature creature) {
-		return creature.getName() + " has " + creature.getCurrentHP() + "/" + creature.getMaxHP();
+		return creature.getName() + " HP: " + creature.getCurrentHP() + "/" + creature.getMaxHP();
 	}
 	
 	private String dspListString(List<String> list) {
@@ -476,9 +457,56 @@ public class GameView extends JFrame implements GameEventListener {
 	}
 	
 	@Override
+	public void gameBattleCmdProcessed(GameBattleChangeEvent e) {
+		if (e.getCommand() == BattleCommandTypes.FIGHT) {
+			dspCreatureHP(((Combat)e.getSource()).getPlayer(), ((Combat)e.getSource()).getMonster());
+		} else if (e.getCommand() == BattleCommandTypes.IDLE) {
+			dspCreatureHP(((Combat)e.getSource()).getPlayer(), ((Combat)e.getSource()).getMonster());
+		} else if (e.getCommand() == BattleCommandTypes.FLEE) {
+			if (e.getSuccess()) {
+				dspMessage("Flee was successful!");
+			} else {
+				dspMessage("You were blocked by the monster");
+				dspCreatureHP(((Combat)e.getSource()).getPlayer(), ((Combat)e.getSource()).getMonster());
+			}
+		}
+	}
+	
+	private void dspCreatureHP(Player p, Monster m) {
+		dspMessage(creatureStatus(p));
+		dspMessage(creatureStatus(m));
+	}
+	
+	@Override
 	public void gameBattleInfoRequested(GameBattleInfoEvent e) {
-		// TODO Auto-generated method stub
+		if (e.getCommand() == BattleCommandTypes.STATUS) {
+			dspMessage(creatureStatus(((Combat)e.getSource()).getPlayer()) + newline + "Attack Power: " + ((Combat)e.getSource()).getPlayer().getAttackPower() + "+" + ((Combat)e.getSource()).getPlayer().getBonusAttack());
+			dspMessage(creatureStatus(((Combat)e.getSource()).getMonster()) + newline + "Attack Power: " + ((Combat)e.getSource()).getMonster().totalAttack());
+		} else if (e.getCommand() == BattleCommandTypes.HELP) {
+			dspMessage("Command List:" + newline + dspListString(((CommandWords)e.getSource()).getBattleCommandList()));
+		} else if (e.getCommand() == BattleCommandTypes.UNKNOWN) {
+			dspMessage("Command Unknown - Check Command List");
+		}
+	}
 
+	@Override
+	public void gameEnded(GameOverEvent e) {
+		closeGameFrames();
+		if (e.getGameResult() == GameResult.LOSE) dspMessage(gameLose);
+		else if (e.getGameResult() == GameResult.WIN) dspMessage(gameWin);
+		dspMessage(gameEnd);
+		gameEnded();
+	}
+
+	@Override
+	public void gameBattleEnded(GameEvent e) {
+		this.drawing2D.repaint();
+		this.drawing3D.repaint();
+	}
+
+	@Override
+	public void gameBattleBegins(GameEvent e) {
+		dspMessage(game_model.getGame().getPlayer().getName() + " has encountered " + game_model.getGame().getPlayer().getRoom().getMonster().getName());
 	}
 
 	// main method, sets up the game, controller, and view

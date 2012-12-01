@@ -37,9 +37,12 @@ import zuulproject.model.innercontroller.battle.*;
  */
 
 public class Game {
+	
+	private String DEFAULT_DESCRIPTION = "Welcome to CUAdventure. Become strong, survive challenges, and defeat the CU Dragon to win!";
 	private boolean gameOver;
     private Parser parser;
     private Player p1;
+    private String gameDescription;
 
     private List<GameChangeListener> listenerList;
     
@@ -50,7 +53,7 @@ public class Game {
         parser = new Parser();
         p1 = new Player();
         gameOver = true;
-    
+        gameDescription = DEFAULT_DESCRIPTION;
         listenerList = new ArrayList<GameChangeListener>();
         initializeGame();
     }
@@ -129,6 +132,10 @@ public class Game {
         gameOver = false;
     }
 
+    public String getGameDescription() {
+    	return gameDescription;
+    }
+    
     /**
      *  processes user inputs and converts it into a command that the game can read (battle command or regular command)
      */    

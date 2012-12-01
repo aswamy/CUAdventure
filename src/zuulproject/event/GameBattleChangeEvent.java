@@ -18,4 +18,7 @@ public class GameBattleChangeEvent extends GameEvent {
 		return command;
 	}
 
+	public boolean getSuccess() {
+		return commandSuccess;
+	}
 }
