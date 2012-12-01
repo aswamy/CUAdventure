@@ -34,7 +34,7 @@ public class GameController {
 	 */
 	class CommandListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			String userInput = view.getUserInput();
+			String userInput = view.getUserInput().trim();
 			if (userInput.length()>0) {
 				view.dspMessage(dspUserInput(userInput));
 				model.processCmd(userInput);

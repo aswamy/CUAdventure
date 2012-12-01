@@ -83,7 +83,6 @@ public class Combat {
         } else if (commandWord == BattleCommandTypes.FIGHT) {
         	creaturesBattle(true, true);
             announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.FIGHT, true));
-            System.out.println(player.getCurrentHP() + "+" + monster.getCurrentHP());
         } else if (commandWord == BattleCommandTypes.IDLE) {
         	creaturesBattle(false, true);
             announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.IDLE, true));
@@ -106,7 +105,7 @@ public class Combat {
     	int escape = generator.nextInt(3);
         
         if(escape==0) {
-            player.playerMove(new Command(CommandTypes.GO, "back"));
+            player.processPlayerCmd(new Command(CommandTypes.GO, "back"));
             return true;
         }
         creaturesBattle(false, true);

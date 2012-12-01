@@ -362,10 +362,13 @@ public class Player extends Creature {
 		return currentRoom.hasMonster();
 	}
 
-	public void processPlayerCmd(Command command) {
+	/*
+	 * returns true if a move that can be undone using "undo" command is completed
+	 */
+	public boolean processPlayerCmd(Command command) {
 		CommandTypes commandWord = command.getCommandWord();
 		boolean canUndo = false;
-
+		
 		if (commandWord == CommandTypes.LOOK) {
 			announceGameInfo(new GameInfoEvent(this.getRoom(),
 					CommandTypes.LOOK));
@@ -407,8 +410,8 @@ public class Player extends Creature {
 			}
 		} else if (commandWord == CommandTypes.EXAMINE) {
 			Item examinedItem = playerExamine(command);
-			announceGameInfo(new GameInfoEvent(examinedItem,
-					CommandTypes.EXAMINE));
+			announceGameInfo(new GameInfoConditionalEvent(this,
+					CommandTypes.EXAMINE, examinedItem));
 		} else if (commandWord == CommandTypes.GO) {
 			boolean commandSuccess = playerMove(command);
 			announceGameChange(new GameChangeEvent(this, CommandTypes.GO,
@@ -428,6 +431,7 @@ public class Player extends Creature {
 			moves.push(command);
 			undoMoves.clear();
 		}
+		return canUndo;
 	}
 
 	public boolean undo() {

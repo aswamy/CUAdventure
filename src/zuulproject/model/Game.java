@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zuulproject.event.*;
+import zuulproject.event.GameOverEvent.GameResult;
 import zuulproject.model.innercontroller.*;
 import zuulproject.model.item.*;
 import zuulproject.model.itemholder.*;
@@ -87,6 +88,10 @@ public class Game {
 			if (g instanceof GameEventListener) ((GameEventListener)g).gameBattleBegins(e);
 		}
 	}
+	
+	protected void annouceGameEnded(GameOverEvent e) {
+		for (GameChangeListener g : listenerList) g.gameEnded(e);		
+	}
     
     /**
      * Create all the rooms and link their exits together.
@@ -141,7 +146,7 @@ public class Game {
     	}
 		if (p1.isDead()) {
             gameOver = true;
-            announceGameInfo(new GameInfoEvent(null, CommandTypes.QUIT));
+            annouceGameEnded(new GameOverEvent(GameResult.LOSE));
 		}
     }
 
@@ -154,12 +159,12 @@ public class Game {
     	CommandTypes commandWord = command.getCommandWord();
     	
         if (commandWord == CommandTypes.UNKNOWN) {
-            announceGameInfo(new GameInfoEvent(null, CommandTypes.UNKNOWN));
+            announceGameInfo(new GameInfoEvent(this, CommandTypes.UNKNOWN));
         } else if (commandWord == CommandTypes.HELP) {
             announceGameInfo(new GameInfoEvent(this.getParser().getCommandWords().getCommandList(), CommandTypes.HELP));
         } else if (commandWord == CommandTypes.QUIT) {
             gameOver = true;
-            announceGameInfo(new GameInfoEvent(null, CommandTypes.QUIT));
+            annouceGameEnded(new GameOverEvent(GameResult.QUIT));
         } else {
             p1.processPlayerCmd(command);
         }

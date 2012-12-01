@@ -1,6 +1,7 @@
 package zuulproject.view;
 
 import zuulproject.event.*;
+import zuulproject.event.GameOverEvent.GameResult;
 import zuulproject.model.*;
 import zuulproject.model.innercontroller.CommandTypes;
 import zuulproject.model.innercontroller.CommandWords;
@@ -26,6 +27,10 @@ public class GameView extends JFrame implements GameEventListener {
 	private static final long serialVersionUID = 1L;
 
 	private static final String commandFail = "Command Failed: ";
+	private static final String gameLose = "You have lost the game :(";
+	private static final String gameWin = "Congratulations! You have won!";
+	private static final String gameEnd = "Game Over. Begin a new game: Game > New Game";	
+	
 	private static final String newline = "\n";
 
 	// making the menu bar and its items
@@ -396,10 +401,10 @@ public class GameView extends JFrame implements GameEventListener {
 			s += "'undo' (No moves to undo)";
 		else if (command == CommandTypes.REDO)
 			s += "'redo' (No moves to redo)";
+		else if (command == CommandTypes.EXAMINE)
+			s += "'examine [item name]'";
 		return s;
 	}
-
-	
 	
 	@Override
 	public void gameBattleCmdProcessed(GameBattleChangeEvent e) {
@@ -409,8 +414,11 @@ public class GameView extends JFrame implements GameEventListener {
 
 	@Override
 	public void gameEnded(GameOverEvent e) {
-		// TODO Auto-generated method stub
-
+		closeGameFrames();
+		if (e.getGameResult() == GameResult.LOSE) dspMessage(gameLose);
+		else if (e.getGameResult() == GameResult.WIN) dspMessage(gameWin);
+		dspMessage(gameEnd);
+		gameEnded();
 	}
 
 	@Override
@@ -435,13 +443,18 @@ public class GameView extends JFrame implements GameEventListener {
 		} else if (e.getCommand() == CommandTypes.STATUS) {
 			dspMessage(creatureStatus((Player)e.getSource()) + newline + "Attack Power: " + ((Player)e.getSource()).getAttackPower() + "+" + ((Player)e.getSource()).getBonusAttack());
 		} else if (e.getCommand() == CommandTypes.EXAMINE) {
-			String temp = "";
-			if (e.getSource() instanceof Weapon) temp+= "Type: Weapon";
-			else if (e.getSource() instanceof Consumable) temp+= "Type: Consumable";
-			else if (e.getSource() instanceof Powerup) temp+= "Type: Powerup";
-			else temp+= "Type: Item";
-			temp+= ", Description: " + ((Item)e.getSource()).getDescription();
-			dspMessage(temp);
+			GameInfoConditionalEvent event = (GameInfoConditionalEvent)e;
+			if ((event.getConditionObject()) == null) {
+				dspCommandFail(event.getCommand());
+			} else {
+				String temp = "";			
+				if ((event.getConditionObject()) instanceof Weapon) temp+= "Type: Weapon";
+				else if ((event.getConditionObject()) instanceof Consumable) temp+= "Type: Consumable";
+				else if ((event.getConditionObject()) instanceof Powerup) temp+= "Type: Powerup";
+				else temp+= "Type: Item";
+				temp+= ", Description: " + ((Item)(event.getConditionObject())).getDescription();
+				dspMessage(temp);
+			}
 		} else if (e.getCommand() == CommandTypes.HELP) {
 			dspMessage("Command List:" + newline + dspListString(((CommandWords)e.getSource()).getCommandList()));
 		} else if (e.getCommand() == CommandTypes.UNKNOWN) {
