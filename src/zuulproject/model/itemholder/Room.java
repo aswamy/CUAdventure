@@ -25,13 +25,9 @@ import java.util.*;
 
 public class Room extends ItemHolder {
     
-    public static final String unexitable = "** You cannot leave the room";
-    public static final String unenterable = "** You cannot enter the room - It seems to be locked!";
-    
     public String description;
     private Map<Exit, Room> exits;
     private Monster monster;
-    private boolean exitable;
     private boolean enterable;
     private String roomName;
     
@@ -45,7 +41,6 @@ public class Room extends ItemHolder {
     	this.roomName = roomName;
         this.description = description;
         exits = new HashMap<Exit, Room>();
-        exitable = true;
         enterable = true;
         monster = null;
     }
@@ -102,33 +97,17 @@ public class Room extends ItemHolder {
         return exits.get(exit);
     }
     
-    /**
-     * Returns a list of exits as a string
-     */
-    public String getAllExits() {
-        String allExits = new String();
-        
-        for (Exit exitName : exits.keySet()){
-        	allExits = allExits + "  " + exitName.toString();
-        }
-        
-        return allExits;
+    public List<String> getExitList() {
+    	List<String> temp = new ArrayList<String>();
+    	for(Exit e : exits.keySet()) temp.add(e.toString());
+    	return temp;
     }
     
     // sees if this room in entered (currently not used)
     public Room roomEntered(String room) {
         return this;
     }
-    
-    public void setExitable(boolean canExit) {
-        exitable = canExit;
-    }
-    
-    // determines whether you can exit this room
-    public boolean isExitable() {
-        return exitable;
-    }
-    
+        
     // sets wheter you can enter this room
     public void setEnterable(boolean canEnter) {
         enterable = canEnter;
@@ -146,6 +125,7 @@ public class Room extends ItemHolder {
     {
         return description;
     }
+    
     public String toString()
     {
     	return this.roomName;

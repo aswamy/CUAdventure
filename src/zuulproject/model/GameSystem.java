@@ -47,7 +47,6 @@ public class GameSystem {
 	// Creates a brand new Zuul game and initializes all the rooms, and the player
 	public void newGame() {
 		Game newGame = new Game();
-		newGame.addGameListenerList(listenerList);
 		game = newGame;
 		announceGameBegins(new GameEvent(this.getGame()));
 	}

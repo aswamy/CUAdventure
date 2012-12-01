@@ -53,6 +53,7 @@ public class GameController {
 	 */
 	class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			if(model.gameRunning()) view.closeGameFrames();
 			view.enableCommandPanel();
 			view.enableGameButtons();
 			model.newGame();

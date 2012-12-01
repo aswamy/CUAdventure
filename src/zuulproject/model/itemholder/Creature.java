@@ -19,9 +19,12 @@ public abstract class Creature extends ItemHolder {
     }
     
     
-    // returns the atk power of the creature
+    // returns the total atk power of the creature
     public abstract int totalAttack();
     
+    public int getAttackPower() {
+    	return attackPower;
+    }
     
     //returns weather the creature is dead
     public boolean isDead() {

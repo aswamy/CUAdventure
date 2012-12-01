@@ -43,7 +43,7 @@ public class Game {
     private List<GameChangeListener> listenerList;
     
     /**
-     * Create the game and initialise its internal map.
+     * Create the game and initialize its internal map.
      */
     public Game() {
         parser = new Parser();
