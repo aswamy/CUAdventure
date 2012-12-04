@@ -22,4 +22,13 @@ public class Powerup extends Item {
     public int getHPIncrease() {
     	return increaseHP;
     }
+    
+    public String toXML(String itemTag) {
+    	return  "<" + itemTag + " type=\"Powerup\">\n"
+    			+ "<name>" + itemName + "</name>\n"
+    			+ "<description>" + itemDescription + "</description>\n"
+    			+ "<attack>" + increaseAttack + "</attack>\n"
+    			+ "<health>" + increaseHP + "</health>\n"
+    			+ "</" + itemTag +">\n";
+    }
 }

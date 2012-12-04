@@ -14,8 +14,21 @@ public class Weapon extends Item{
         super(name);
         attackPower = atk;
     }
+    
+    public Weapon(String name, String desc, int atk) {
+    	super(name, desc);
+    	attackPower = atk;
+    }
 
     public int getWeaponAtk() {
         return attackPower;
+    }
+    
+    public String toXML(String itemTag) {
+    	return  "<" + itemTag + " type=\"Weapon\">\n"
+    			+ "<name>" + itemName + "</name>\n"
+    			+ "<description>" + itemDescription + "</description>\n"
+    			+ "<attack>" + attackPower + "</attack>\n"
+    			+ "</" + itemTag +">\n";
     }
 }

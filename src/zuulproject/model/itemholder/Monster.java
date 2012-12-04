@@ -31,4 +31,15 @@ public class Monster extends Creature{
     public int totalAttack() {
     	return attackPower;
     }
+    
+    public String toXML() {
+    	String temp = "";	
+    	temp+= "<monster mname=\"" + this.getName() + "\">\n";
+    	temp+= "<attack>" + attackPower +"</attack>\n";
+    	temp+= "<damagerange>" + damageRange + "</damagerange>\n";
+    	temp+= "<maxHP>" + maxHP + "</maxHP>\n";
+    	temp+= "<currentHP>" + currentHP + "</currentHP>\n";
+    	temp+= itemsToXML("monsteritem");
+    	return temp;
+    }
 }

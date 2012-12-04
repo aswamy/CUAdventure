@@ -56,4 +56,11 @@ public class Item {
     	Item itm = (Item)obj;
     	return this.getName().equalsIgnoreCase(itm.getName());
     }
+    
+    public String toXML(String itemTag) {
+    	return  "<" + itemTag + " type=\"Item\">\n"
+    			+ "<name>" + itemName + "</name>\n"
+    			+ "<description>" + itemDescription + "</description>\n"
+    			+ "</" + itemTag +">\n";
+    }
 }

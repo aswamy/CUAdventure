@@ -1,6 +1,7 @@
 package zuulproject.model.itemholder;
 
 import zuulproject.model.innercontroller.*;
+
 import java.util.*;
 /**
  * Class Room - a room in an adventure game.
@@ -131,4 +132,16 @@ public class Room extends ItemHolder {
     	return this.roomName;
     }
 
+    public String toXML() {
+    	String temp = "";
+    	temp+= "<room rname=\"" + this.getRoomName() + "\">\n";
+    	temp+= "<description>" + this.description + "</description>\n";
+    	temp+= itemsToXML("roomitem");
+    	for (Map.Entry<Exit, Room> er : exits.entrySet()) {
+    		temp+= "<exit rdirection=\"" + er.getKey() + "\">" + er.getValue().toString() + "</exit>\n";
+    	}
+    	if (this.hasMonster()) temp+= monster.toXML();
+    	temp+= "</room>\n";
+    	return temp;
+    }
 }

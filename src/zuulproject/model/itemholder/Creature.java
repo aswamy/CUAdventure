@@ -18,12 +18,19 @@ public abstract class Creature extends ItemHolder {
         return name;
     }
     
+    public void setName(String s) {
+    	name = s;
+    }
     
     // returns the total atk power of the creature
     public abstract int totalAttack();
     
     public int getAttackPower() {
     	return attackPower;
+    }
+    
+    public void setAttackPower(int a) {
+    	attackPower = a;
     }
     
     //returns weather the creature is dead
@@ -49,8 +56,16 @@ public abstract class Creature extends ItemHolder {
     	return currentHP;
     }
     
+    public void setCurrentHP(int hp) {
+    	currentHP = hp;
+    }
+    
     // returns the maximum hp the creature can have
     public int getMaxHP() {
     	return maxHP;
+    }
+    
+    public void setMaxHP(int hp) {
+    	maxHP = hp;
     }
 }

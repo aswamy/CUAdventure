@@ -11,12 +11,17 @@ import java.util.List;
  */
 
 public class GameSystem {
+	
+	private static final String DEFAULT_GAMEPATH = String.format("%s\\%s", System.getProperty("user.dir"), "src\\zuulproject\\model\\saves\\level1.xml");
+	
 	private Game game;
 	private List<GameChangeListener> listenerList;
+	private String savePath;
 	
 	public GameSystem() {
 		game = null;
-		listenerList = new ArrayList<>();
+		listenerList = new ArrayList<GameChangeListener>();
+		savePath = "";
 	}
 	
 	// Add people who want to listen to the game
@@ -60,5 +65,17 @@ public class GameSystem {
 	// returns the game
 	public Game getGame() {
 		return game;
+	}
+	
+	public void saveGame() {
+		
+	}
+	
+	public void saveAsGame() {
+		
+	}
+	
+	public void openGame() {
+		
 	}
 }

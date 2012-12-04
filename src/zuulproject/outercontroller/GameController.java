@@ -27,6 +27,9 @@ public class GameController {
 		view.addInventoryListener(new InventoryListener());
 		view.addRoomItemListener(new RoomItemListener());
 		view.addCommandListButtonListener(new CommandListButtonListener());
+		view.addUndoGameListener(new UndoGameListener());
+		view.addRedoGameListener(new RedoGameListener());
+		view.addSaveGameListener(new SaveGameListener());
 	}
 
 	/*
@@ -69,6 +72,12 @@ public class GameController {
 		}
 	}
 	
+	class SaveGameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			model.saveGame();
+		}
+	}
+	
 	/*
 	 * Does the same thing as the help command when you type "help" into command box
 	 */
@@ -76,6 +85,26 @@ public class GameController {
 		public void actionPerformed(ActionEvent e) {
 			view.dspMessage("\n** You clicked 'help'");
 			model.processCmd("help");
+		}
+	}
+
+	/* 
+	 * calls undo command
+	 */
+	class UndoGameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			view.dspMessage("\n** You clicked 'undo'");
+			model.processCmd("undo");
+		}
+	}
+
+	/*
+	 * calls redo command
+	 */
+	class RedoGameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			view.dspMessage("\n** You clicked 'help'");
+			model.processCmd("redo");
 		}
 	}
 	

@@ -32,7 +32,7 @@ public class Combat {
         monster = m1;
         parser = p;
     
-        listenerList = new ArrayList<>();
+        listenerList = new ArrayList<GameChangeListener>();
     }
 
 	public synchronized void addGameListener(GameChangeListener g) {

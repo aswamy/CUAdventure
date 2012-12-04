@@ -50,7 +50,7 @@ public class Player extends Creature {
 		currentHP = PLAYER_HP;
 		equippedItem = null;
 	}
-
+	
 	public synchronized void addGameListenerList(List<GameChangeListener> g) {
 		listenerList.addAll(g);
 	}
@@ -101,6 +101,11 @@ public class Player extends Creature {
 	
 	public int getBonusAttack() {
 		return bonusAttack;
+	}
+	
+	public void setWeapon(Weapon w) {
+		equippedItem = w;
+		bonusAttack = w.getWeaponAtk();
 	}
 
 	/*
@@ -229,8 +234,7 @@ public class Player extends Creature {
 			}
 		}
 		if (!(newWeapon == null)) {
-			equippedItem = newWeapon;
-			bonusAttack = newWeapon.getWeaponAtk();
+			setWeapon(newWeapon);
 			return true;
 		} else
 			return false;
@@ -494,5 +498,18 @@ public class Player extends Creature {
 		moves.push(cmd);
 
 		return true;
+	}
+	
+	public String toXML() {
+		String temp = "";
+		temp += "<player pname=\"" + getName() + "\">\n"
+				+ "<currentroom>" + getRoom() + "</currentroom>\n"
+				+ itemsToXML("playeritem")
+				+ "<attackpower>" + attackPower + "</attackpower>\n"
+				+ "<currentHP>" + currentHP + "</currentHP>\n"
+				+ "<maxHP>" + maxHP + "</maxHP>\n";
+				if(equippedItem!=null) temp+= "<equippeditem>" + equippedItem.toString() + "</equippeditem>\n";
+		temp+= "</player>\n";
+		return temp;
 	}
 }

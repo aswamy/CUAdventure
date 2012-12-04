@@ -1,6 +1,7 @@
 package zuulproject.model.itemholder;
 
 import zuulproject.model.item.*;
+
 import java.util.*;
 
 /**
@@ -74,5 +75,13 @@ public abstract class ItemHolder {
 
 	public boolean isInventoryEmpty() {
 		return (items.size() == 0);
+	}
+	
+	public String itemsToXML(String itemTag) {
+		String temp = "";
+    	for (Item i : items) {
+    		temp+=i.toXML(itemTag);
+    	}
+		return temp;
 	}
 }

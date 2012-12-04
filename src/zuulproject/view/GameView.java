@@ -15,6 +15,7 @@ import zuulproject.outercontroller.*;
 import java.awt.*;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class GameView extends JFrame implements GameEventListener {
 
 	private JMenu gameMenu = new JMenu("Game");
 	private JMenuItem newGame = new JMenuItem("New Game");
+	private JMenuItem saveAsGame = new JMenuItem("Save As");
 	private JMenuItem saveGame = new JMenuItem("Save");
 	private JMenuItem openGame = new JMenuItem("Open");
 	private JMenuItem quitGame = new JMenuItem("Quit");
@@ -83,6 +85,20 @@ public class GameView extends JFrame implements GameEventListener {
 	private RoomItemFrame roomItemView;
 	private CommandListFrame commandListView;
 
+	// This is for the dialog boxes
+	JTextField savePath = new JTextField();
+	JTextField openPath = new JTextField();
+	
+	final JComponent[] saveInputs = new JComponent[] {
+			new JLabel("Save Path"),
+			savePath
+	};
+	
+	final JComponent[] openInputs = new JComponent[] {
+			new JLabel("Open Path"),
+			openPath
+	};
+	
 	public GameView(GameSystem g) {
 
 		// instanciate the model, and create the 2D and 3D views
@@ -94,6 +110,8 @@ public class GameView extends JFrame implements GameEventListener {
 		gameMenu.add(newGame);
 		gameMenu.add(saveGame);
 		saveGame.setEnabled(false);
+		gameMenu.add(saveAsGame);
+		saveAsGame.setEnabled(false);
 		gameMenu.add(openGame);
 		gameMenu.add(quitGame);
 
@@ -225,6 +243,8 @@ public class GameView extends JFrame implements GameEventListener {
 	// enable all the buttons that need to be enabled in the menu, and other
 	// game related buttons
 	public void enableGameButtons() {
+		saveGame.setEnabled(true);
+		saveAsGame.setEnabled(true);
 		undoGame.setEnabled(true);
 		redoGame.setEnabled(true);
 		helpGame.setEnabled(true);
@@ -234,6 +254,8 @@ public class GameView extends JFrame implements GameEventListener {
 
 	// disable all buttons that require an instance of a game to function
 	public void disableGameButtons() {
+		saveGame.setEnabled(false);
+		saveAsGame.setEnabled(false);
 		undoGame.setEnabled(false);
 		redoGame.setEnabled(false);
 		helpGame.setEnabled(false);
@@ -268,13 +290,25 @@ public class GameView extends JFrame implements GameEventListener {
 	public void addNewGameListener(ActionListener listener) {
 		newGame.addActionListener(listener);
 	}
-
+	
 	public void addQuitGameListener(ActionListener listener) {
 		quitGame.addActionListener(listener);
 	}
+	
+	public void addUndoGameListener(ActionListener listener) {
+		undoGame.addActionListener(listener);
+	}
 
+	public void addRedoGameListener(ActionListener listener) {
+		redoGame.addActionListener(listener);
+	}
+	
 	public void addHelpGameListener(ActionListener listener) {
 		helpGame.addActionListener(listener);
+	}
+	
+	public void addSaveGameListener(ActionListener listener) {
+		saveGame.addActionListener(listener);
 	}
 
 	public void addDrawingMouseListener(MouseListener listener) {
