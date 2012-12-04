@@ -1,6 +1,7 @@
 package zuulproject.view;
 
 import zuulproject.event.*;
+import zuulproject.event.GameActionFailEvent.FailedAction;
 import zuulproject.event.GameOverEvent.GameResult;
 import zuulproject.model.*;
 import zuulproject.model.innercontroller.CommandTypes;
@@ -311,6 +312,10 @@ public class GameView extends JFrame implements GameEventListener {
 		saveGame.addActionListener(listener);
 	}
 
+	public void addOpenGameListener(ActionListener listener) {
+		openGame.addActionListener(listener);
+	}
+	
 	public void addDrawingMouseListener(MouseListener listener) {
 		drawing3D.addMouseListener(listener);
 	}
@@ -385,6 +390,9 @@ public class GameView extends JFrame implements GameEventListener {
 
 	@Override
 	public void gameBegins(GameEvent e) {
+		enableCommandPanel();
+		enableGameButtons();
+
 		createGameFrames();
 		createCommandListFrame();
 		((Game) e.getSource()).addGameListener(this);
@@ -534,13 +542,25 @@ public class GameView extends JFrame implements GameEventListener {
 
 	@Override
 	public void gameBattleEnded(GameEvent e) {
+		saveGame.setEnabled(true);
+		saveAsGame.setEnabled(true);
 		this.drawing2D.repaint();
 		this.drawing3D.repaint();
 	}
 
 	@Override
 	public void gameBattleBegins(GameEvent e) {
+		saveGame.setEnabled(false);
+		saveAsGame.setEnabled(false);
 		dspMessage(game_model.getGame().getPlayer().getName() + " has encountered " + game_model.getGame().getPlayer().getRoom().getMonster().getName());
+	}
+	
+	@Override
+	public void gameActionFailed(GameActionFailEvent e) {
+		if (e.getFailedAction() == FailedAction.OPENFILE) showError("File Not Found");
+		else if (e.getFailedAction() == FailedAction.PARSEFILE) showError("Save File has an error");
+		else if (e.getFailedAction() == FailedAction.SAVEFILE) showError("Must 'Save As' before 'Save'");
+		else if (e.getFailedAction() == FailedAction.SAVECOMBAT) showError("Cannot Save during a fight!\n(That's cheating)");
 	}
 
 	// main method, sets up the game, controller, and view

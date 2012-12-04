@@ -30,6 +30,7 @@ public class GameController {
 		view.addUndoGameListener(new UndoGameListener());
 		view.addRedoGameListener(new RedoGameListener());
 		view.addSaveGameListener(new SaveGameListener());
+		view.addOpenGameListener(new OpenGameListener());
 	}
 
 	/*
@@ -57,8 +58,6 @@ public class GameController {
 	class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if(model.gameRunning()) view.closeGameFrames();
-			view.enableCommandPanel();
-			view.enableGameButtons();
 			model.newGame();
 		}
 	}
@@ -75,6 +74,13 @@ public class GameController {
 	class SaveGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			model.saveGame();
+		}
+	}
+	
+	class OpenGameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if(model.gameRunning()) view.closeGameFrames();
+			model.openGame(GameSystem.DEFAULT_GAMEPATH);
 		}
 	}
 	

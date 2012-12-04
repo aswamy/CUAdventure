@@ -1,9 +1,15 @@
 package zuulproject.model;
 
 import zuulproject.event.*;
+import zuulproject.event.GameActionFailEvent.FailedAction;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.*;
+
+import org.w3c.dom.Document;
 
 /**
  * A game system makes new games, destroys old ones, tells when the game is over, and whether it is still running (or shutdown)
@@ -12,7 +18,9 @@ import java.util.List;
 
 public class GameSystem {
 	
-	private static final String DEFAULT_GAMEPATH = String.format("%s\\%s", System.getProperty("user.dir"), "src\\zuulproject\\model\\saves\\level1.xml");
+	public static final String DEFAULT_GAMEPATH = String.format("%s\\%s",
+			System.getProperty("user.dir"),
+			"src\\zuulproject\\model\\saves\\level1.xml");
 	
 	private Game game;
 	private List<GameChangeListener> listenerList;
@@ -38,6 +46,12 @@ public class GameSystem {
 	protected void announceGameBegins(GameEvent e) {
 		for (GameChangeListener g : listenerList) g.gameBegins(e);
 	}
+	
+	protected void announceGameActionFailed(GameActionFailEvent e) {
+		for (GameChangeListener g : listenerList) {
+			if(g instanceof GameEventListener) ((GameEventListener)g).gameActionFailed(e);
+		}
+	}
 
 	// process a user input send as a string
 	public void processCmd(String s) {
@@ -51,9 +65,7 @@ public class GameSystem {
 	
 	// Creates a brand new Zuul game and initializes all the rooms, and the player
 	public void newGame() {
-		Game newGame = new Game();
-		game = newGame;
-		announceGameBegins(new GameEvent(this.getGame()));
+		openGame(DEFAULT_GAMEPATH);
 	}
 	
 	// Determines whether the game console is on, but no game is running
@@ -75,7 +87,25 @@ public class GameSystem {
 		
 	}
 	
-	public void openGame() {
-		
+	public void openGame(String path) {
+		File file = new File(path);
+		if (file.exists()) {
+			try {
+				DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
+				DocumentBuilder d = factory.newDocumentBuilder();
+				Document doc = d.parse(file);
+
+				Game newGame = new Game(doc);
+				game = newGame;
+				announceGameBegins(new GameEvent(this.getGame()));				
+				if(!(savePath.equals(DEFAULT_GAMEPATH))) savePath = path;
+				
+			} catch (Exception e) {
+				announceGameActionFailed(new GameActionFailEvent(this, FailedAction.PARSEFILE));
+			}
+		} else {
+			announceGameActionFailed(new GameActionFailEvent(this, FailedAction.OPENFILE));
+		}
 	}
 }

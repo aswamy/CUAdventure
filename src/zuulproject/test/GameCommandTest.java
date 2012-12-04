@@ -18,11 +18,14 @@ import junit.framework.TestCase;
  */
 
 public class GameCommandTest extends TestCase {
+	GameSystem model;
 	Game game;
 	Room startingRoom;
 	
 	protected void setUp() {
-		game = new Game();
+		model = new GameSystem();
+		model.newGame();
+		game = model.getGame();
 		startingRoom = new Room("a room", "room");
 		game.getPlayer().setRoom(startingRoom);
 	}

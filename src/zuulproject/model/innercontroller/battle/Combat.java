@@ -87,7 +87,7 @@ public class Combat {
     	BattleCommandTypes commandWord = command.getCommandWord();
    
         if (commandWord == BattleCommandTypes.UNKNOWN) {
-        	announceGameBattleInfo(new GameBattleInfoEvent(null, BattleCommandTypes.UNKNOWN));
+        	announceGameBattleInfo(new GameBattleInfoEvent(this, BattleCommandTypes.UNKNOWN));
         } else if (commandWord == BattleCommandTypes.FIGHT) {
         	creaturesBattle(true, true);
             announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.FIGHT, true));
