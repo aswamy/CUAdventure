@@ -67,7 +67,7 @@ public class Game {
 		listenerList = new ArrayList<GameChangeListener>();
 		rooms = new ArrayList<Room>();
 		gamePath = path;
-//		initializeGame();
+		// initializeGame();
 		initializeLevel();
 		System.out.println(this.toXML());
 	}
@@ -165,50 +165,84 @@ public class Game {
 	public void initializeLevel() {
 
 		File file = new File(gamePath);
-		List<Room> tempRooms = new ArrayList<Room>();
 		if (file.exists()) {
 
 			try {
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilderFactory factory = DocumentBuilderFactory
+						.newInstance();
 				DocumentBuilder d = factory.newDocumentBuilder();
 				Document doc = d.parse(file);
 
 				Element element = doc.getDocumentElement();
-								
+
 				NodeList listOfRooms = element.getElementsByTagName("room");
 
-				if (listOfRooms != null) {
+				if (listOfRooms != null && listOfRooms.getLength()>0) {
 					for (int i = 0; i < listOfRooms.getLength(); i++) {
 						Element e = (Element) listOfRooms.item(i);
-						tempRooms.add(getRoom(e));
+						rooms.add(getRoom(e));
+					}
+				}
+
+				if (listOfRooms != null && listOfRooms.getLength()>0) {
+					for (int i = 0; i < listOfRooms.getLength(); i++) {
+						Element e = (Element) listOfRooms.item(i);
+						String roomName = e.getAttribute("rname");
+						
+						NodeList listOfExits = e.getElementsByTagName("exit");
+						if (listOfExits != null && listOfExits.getLength() >0) {
+							for (int j = 0; j < listOfExits.getLength(); j++) {
+								Element exit = (Element) listOfExits.item(j);
+								
+								String exitDirection = exit.getAttribute("rdirection");
+								String exitRoom = exit.getTextContent();
+								getRoom(roomName).setExits(Exit.valueOf(exitDirection), getRoom(exitRoom));
+							}
+						}
 					}
 				}
 				
 				NodeList playerStart = element.getElementsByTagName("player");
 
-				if (playerStart != null && playerStart.getLength()>0) {
-					Element e = (Element)playerStart.item(0);
+				if (playerStart != null && playerStart.getLength() > 0) {
+					Element e = (Element) playerStart.item(0);
 					p1.setName(e.getAttribute("pname"));
-					for (Room r : tempRooms) {
-						if (r.getRoomName().equals(getTextValue(e, "currentroom"))) p1.setRoom(r);
+					///////////////////// FIX THIS!!!
+					for (Room r : rooms) {
+						if (r.getRoomName().equals(
+								getTextValue(e, "currentroom")))
+							p1.setRoom(r);
 					}
+
+					NodeList listOfItems = e.getElementsByTagName("playeritem");
+
+					if (listOfItems != null && listOfItems.getLength()>0) {
+						for (int i = 0; i < listOfItems.getLength(); i++) {
+							Element el = (Element) listOfItems.item(i);
+							p1.insertItem(getItem(el));
+						}
+
+						Weapon equippedWeapon = p1.findWeapon(getTextValue(e,
+								"equippeditem"));
+						if (equippedWeapon != null)
+							p1.setWeapon(equippedWeapon);
+					}
+
 				}
 
-				rooms = tempRooms;
-				
 				// once all the rooms are uploaded, set up the exits
 
 			} catch (Exception e) {
 				System.out.println("moo2");
 			}
 		} else {
-			
+
 		}
 	}
 
 	private Room getRoom(Element element) {
 		String rname = element.getAttribute("rname");
-		String rdescription = getTextValue(element, "description");
+		String rdescription = getTextValue(element, "rdescription");
 
 		Room room = new Room(rdescription, rname);
 
@@ -220,13 +254,41 @@ public class Game {
 				room.insertItem(getItem(e));
 			}
 		}
+
+		NodeList monsters = element.getElementsByTagName("monster");
+
+		if (monsters != null && monsters.getLength() > 0) {
+			Element e = (Element) monsters.item(0);
+			room.spawnMonster(getMonster(e));
+		}
+
 		return room;
+	}
+
+	private Monster getMonster(Element element) {
+		String mname = element.getAttribute("mname");
+		int mattack = getIntValue(element, "attack");
+		int mdamage = getIntValue(element, "damagerange");
+		int maxHP = getIntValue(element, "maxHP");
+		int currentHP = getIntValue(element, "currentHP");
+
+		Monster m = new Monster(mname, mattack, mdamage, maxHP, currentHP);
+
+		NodeList monsterItems = element.getElementsByTagName("monsteritem");
+		if (monsterItems != null) {
+			for (int i = 0; i < monsterItems.getLength(); i++) {
+				Element e = (Element) monsterItems.item(i);
+				m.insertItem(getItem(e));
+			}
+		}
+
+		return m;
 	}
 
 	private Item getItem(Element element) {
 		String name = getTextValue(element, "name");
 		String description = getTextValue(element, "description");
-		
+
 		String type = element.getAttribute("type");
 		Item item;
 
@@ -322,6 +384,14 @@ public class Game {
 	 */
 	public Player getPlayer() {
 		return p1;
+	}
+	
+	public Room getRoom(String rname) {
+		Room room = null;
+		for (Room r: rooms) {
+			if(r.getRoomName().equals(rname)) room = r;
+		}
+		return room;
 	}
 
 	/*

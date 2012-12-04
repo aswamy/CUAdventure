@@ -50,7 +50,7 @@ public class Player extends Creature {
 		currentHP = PLAYER_HP;
 		equippedItem = null;
 	}
-	
+
 	public synchronized void addGameListenerList(List<GameChangeListener> g) {
 		listenerList.addAll(g);
 	}
@@ -98,14 +98,26 @@ public class Player extends Creature {
 	public Weapon getWeapon() {
 		return equippedItem;
 	}
-	
+
 	public int getBonusAttack() {
 		return bonusAttack;
 	}
-	
+
 	public void setWeapon(Weapon w) {
 		equippedItem = w;
 		bonusAttack = w.getWeaponAtk();
+	}
+
+	public Weapon findWeapon(String s) {
+		Weapon w = null;
+		for (Item item : items) {
+			if (item.getName().equals(s)) {
+				if (item instanceof Weapon) {
+					w = (Weapon) item;
+				}
+			}
+		}
+		return w;
 	}
 
 	/*
@@ -226,13 +238,9 @@ public class Player extends Creature {
 		}
 
 		itemName = command.getSecondWord();
-		for (Item item : items) {
-			if (item.getName().equals(itemName)) {
-				if (item instanceof Weapon) {
-					newWeapon = (Weapon) item;
-				}
-			}
-		}
+
+		newWeapon = findWeapon(itemName);
+
 		if (!(newWeapon == null)) {
 			setWeapon(newWeapon);
 			return true;
@@ -367,12 +375,13 @@ public class Player extends Creature {
 	}
 
 	/*
-	 * returns true if a move that can be undone using "undo" command is completed
+	 * returns true if a move that can be undone using "undo" command is
+	 * completed
 	 */
 	public boolean processPlayerCmd(Command command) {
 		CommandTypes commandWord = command.getCommandWord();
 		boolean canUndo = false;
-		
+
 		if (commandWord == CommandTypes.LOOK) {
 			announceGameInfo(new GameInfoEvent(this.getRoom(),
 					CommandTypes.LOOK));
@@ -499,17 +508,18 @@ public class Player extends Creature {
 
 		return true;
 	}
-	
+
 	public String toXML() {
 		String temp = "";
-		temp += "<player pname=\"" + getName() + "\">\n"
-				+ "<currentroom>" + getRoom() + "</currentroom>\n"
-				+ itemsToXML("playeritem")
+		temp += "<player pname=\"" + getName() + "\">\n" + "<currentroom>"
+				+ getRoom() + "</currentroom>\n" + itemsToXML("playeritem")
 				+ "<attackpower>" + attackPower + "</attackpower>\n"
-				+ "<currentHP>" + currentHP + "</currentHP>\n"
-				+ "<maxHP>" + maxHP + "</maxHP>\n";
-				if(equippedItem!=null) temp+= "<equippeditem>" + equippedItem.toString() + "</equippeditem>\n";
-		temp+= "</player>\n";
+				+ "<currentHP>" + currentHP + "</currentHP>\n" + "<maxHP>"
+				+ maxHP + "</maxHP>\n";
+		if (equippedItem != null)
+			temp += "<equippeditem>" + equippedItem.toString()
+					+ "</equippeditem>\n";
+		temp += "</player>\n";
 		return temp;
 	}
 }

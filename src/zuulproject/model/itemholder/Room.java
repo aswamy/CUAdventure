@@ -135,7 +135,7 @@ public class Room extends ItemHolder {
     public String toXML() {
     	String temp = "";
     	temp+= "<room rname=\"" + this.getRoomName() + "\">\n";
-    	temp+= "<description>" + this.description + "</description>\n";
+    	temp+= "<rdescription>" + this.description + "</rdescription>\n";
     	temp+= itemsToXML("roomitem");
     	for (Map.Entry<Exit, Room> er : exits.entrySet()) {
     		temp+= "<exit rdirection=\"" + er.getKey() + "\">" + er.getValue().toString() + "</exit>\n";

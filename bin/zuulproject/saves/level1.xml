@@ -1,0 +1,58 @@
+<game player="UniCenter">
+	<room rname="Unicenter">
+		<description>in the Uni-Center</description>
+		<exit rdirection="south">Hertzberg</exit>
+		<exit rdirection="west">Tory</exit>
+		<exit rdirection="east">Architecture</exit>
+		<exit rdirection="teleporter">Southam</exit>
+		<item type="Weapon">
+			<name>Sword</name>
+			<description>A kick butt beginner weapon</description>
+			<attack>2</attack>
+		</item>
+	</room>
+	<room rname="Hertzberg">
+		<description>inside the Hertzberg building</description>
+		<exit rdirection="west">Loeb</exit>
+		<exit rdirection="north">Unicenter</exit>
+	</room>
+	<room rname="Loeb">
+		<description>in the Loeb building</description>
+		<exit rdirection="west">Tory</exit>
+		<exit rdirection="east">Architecture</exit>
+		<monster mname="A Vampire">
+			<attack>7</attack>
+			<damagerange>2</damagerange>
+			<maxHP>10</maxHP>
+			<currentHP>10</currentHP>
+			<item type="Weapon">
+				<name>SuperSword</name>
+				<description>Sharp and pointy</description>
+				<attack>4</attack>
+			</item>
+		</monster>
+	</room>
+	<room rname="Southam">
+		<description>outside Southam Hall</description>
+		<exit rdirection="east">Loeb</exit>
+		<exit rdirection="teleporter">Unicenter</exit>
+		<item type="Consumable">
+			<name>SmallPotion</name>
+			<description>Heals 5HP</description>
+			<regenHP>5</regenHP>
+		</item>		
+	</room>
+	<room rname="Tory">
+		<description>on the main floor of Tory Building</description>
+		<exit rdirection="east">Unicenter</exit>
+	</room>
+	<room rname="Architecture">
+		<description>near the Architecture Building</description>
+		<exit rdirection="west">Unicenter</exit>
+		<exit rdirection="south">ParkingLot</exit>
+	</room>
+	<room rname="ParkingLot">
+		<description>standing in the Parking Lot</description>
+		<exit rdirection="north">Architecture</exit>
+	</room>
+</game>
