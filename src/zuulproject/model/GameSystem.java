@@ -18,9 +18,13 @@ import org.w3c.dom.Document;
 
 public class GameSystem {
 	
-	public static final String DEFAULT_GAMEPATH = String.format("%s\\%s",
+	public static final String DEFAULT_GAMEFILE = String.format("%s\\%s",
 			System.getProperty("user.dir"),
-			"src\\zuulproject\\model\\saves\\level1.xml");
+			"src\\zuulproject\\saves\\level1.xml");
+	
+	public static final String DEFAULT_SAVEPATH = String.format("%s\\%s",
+			System.getProperty("user.dir"),
+			"src\\zuulproject\\model\\saves\\");
 	
 	private Game game;
 	private List<GameChangeListener> listenerList;
@@ -65,7 +69,7 @@ public class GameSystem {
 	
 	// Creates a brand new Zuul game and initializes all the rooms, and the player
 	public void newGame() {
-		openGame(DEFAULT_GAMEPATH);
+		openGame(DEFAULT_GAMEFILE);
 	}
 	
 	// Determines whether the game console is on, but no game is running
@@ -87,6 +91,10 @@ public class GameSystem {
 		
 	}
 	
+	public void openGameFile(String file) {
+		openGame(DEFAULT_SAVEPATH + file);
+	}
+	
 	public void openGame(String path) {
 		File file = new File(path);
 		if (file.exists()) {
@@ -99,7 +107,7 @@ public class GameSystem {
 				Game newGame = new Game(doc);
 				game = newGame;
 				announceGameBegins(new GameEvent(this.getGame()));				
-				if(!(savePath.equals(DEFAULT_GAMEPATH))) savePath = path;
+				if(!(savePath.equals(DEFAULT_GAMEFILE))) savePath = path;
 				
 			} catch (Exception e) {
 				announceGameActionFailed(new GameActionFailEvent(this, FailedAction.PARSEFILE));

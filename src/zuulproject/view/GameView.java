@@ -86,19 +86,9 @@ public class GameView extends JFrame implements GameEventListener {
 	private RoomItemFrame roomItemView;
 	private CommandListFrame commandListView;
 
-	// This is for the dialog boxes
-	JTextField savePath = new JTextField();
-	JTextField openPath = new JTextField();
-	
-	final JComponent[] saveInputs = new JComponent[] {
-			new JLabel("Save Path"),
-			savePath
-	};
-	
-	final JComponent[] openInputs = new JComponent[] {
-			new JLabel("Open Path"),
-			openPath
-	};
+	// This is for the save/open dialog boxes
+	private SaveDialogBox saveBox;
+	private SaveDialogBox openBox;
 	
 	public GameView(GameSystem g) {
 
@@ -107,6 +97,9 @@ public class GameView extends JFrame implements GameEventListener {
 		drawing2D = new DrawingArea(game_model);
 		drawing3D = new Drawing3DArea(game_model, new Dimension(320, 320));
 
+		saveBox = new SaveDialogBox("Save As");
+		openBox = new SaveDialogBox("Open");
+		
 		// putting together the menu bar
 		gameMenu.add(newGame);
 		gameMenu.add(saveGame);
@@ -312,7 +305,11 @@ public class GameView extends JFrame implements GameEventListener {
 		saveGame.addActionListener(listener);
 	}
 
-	public void addOpenGameListener(ActionListener listener) {
+	public void addSaveAsButtonListener(ActionListener listener) {
+		saveAsGame.addActionListener(listener);
+	}
+	
+	public void addOpenButtonListener(ActionListener listener) {
 		openGame.addActionListener(listener);
 	}
 	
@@ -370,6 +367,16 @@ public class GameView extends JFrame implements GameEventListener {
 		return roomItemView;
 	}
 
+	// returns the save dialog box
+	public SaveDialogBox getSaveAsBox() {
+		return saveBox;
+	}
+	
+	//returns the open dialog box
+	public SaveDialogBox getOpenBox() {
+		return openBox;
+	}
+	
 	// creates frames associated with the buttons to show the inventory and room
 	// items
 	public void createGameFrames() {

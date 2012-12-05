@@ -1,23 +1,35 @@
-<game player="UniCenter">
+<game>
+	<player pname="Player">
+		<currentroom>Unicenter</currentroom>
+		<playeritem type="Weapon">
+			<name>Stick</name>
+			<description>A weak weapon</description>
+			<attack>1</attack>
+		</playeritem>
+		<attackpower>5</attackpower>
+		<currentHP>20</currentHP>
+		<maxHP>20</maxHP>
+		<equippeditem>Stick</equippeditem>
+	</player>
 	<room rname="Unicenter">
-		<description>in the Uni-Center</description>
+		<rdescription>in the Uni-Center</rdescription>
 		<exit rdirection="south">Hertzberg</exit>
 		<exit rdirection="west">Tory</exit>
 		<exit rdirection="east">Architecture</exit>
 		<exit rdirection="teleporter">Southam</exit>
-		<item type="Weapon">
+		<roomitem type="Weapon">
 			<name>Sword</name>
 			<description>A kick butt beginner weapon</description>
 			<attack>2</attack>
-		</item>
+		</roomitem>
 	</room>
 	<room rname="Hertzberg">
-		<description>inside the Hertzberg building</description>
+		<rdescription>inside the Hertzberg building</rdescription>
 		<exit rdirection="west">Loeb</exit>
 		<exit rdirection="north">Unicenter</exit>
 	</room>
 	<room rname="Loeb">
-		<description>in the Loeb building</description>
+		<rdescription>in the Loeb building</rdescription>
 		<exit rdirection="west">Tory</exit>
 		<exit rdirection="east">Architecture</exit>
 		<monster mname="A Vampire">
@@ -25,26 +37,42 @@
 			<damagerange>2</damagerange>
 			<maxHP>10</maxHP>
 			<currentHP>10</currentHP>
-			<item type="Weapon">
+			<monsteritem type="Weapon">
 				<name>SuperSword</name>
 				<description>Sharp and pointy</description>
 				<attack>4</attack>
-			</item>
+			</monsteritem>
 		</monster>
 	</room>
 	<room rname="Southam">
-		<description>outside Southam Hall</description>
+		<rdescription>outside Southam Hall</rdescription>
 		<exit rdirection="east">Loeb</exit>
 		<exit rdirection="teleporter">Unicenter</exit>
-		<item type="Consumable">
+		<roomitem type="Consumable">
 			<name>SmallPotion</name>
 			<description>Heals 5HP</description>
 			<regenHP>5</regenHP>
-		</item>		
+		</roomitem>
 	</room>
 	<room rname="Tory">
-		<description>on the main floor of Tory Building</description>
+		<rdescription>on the main floor of Tory Building</rdescription>
 		<exit rdirection="east">Unicenter</exit>
+		<monster mname="A Vampire">
+			<attack>7</attack>
+			<damagerange>2</damagerange>
+			<maxHP>10</maxHP>
+			<currentHP>10</currentHP>
+			<monsteritem type="Weapon">
+				<name>SuperSword</name>
+				<description>Sharp and pointy</description>
+				<attack>4</attack>
+			</monsteritem>
+			<monsteritem type="Weapon">
+				<name>MegaSword</name>
+				<description>Sharp and pointy</description>
+				<attack>5</attack>
+			</monsteritem>
+		</monster>
 	</room>
 	<room rname="Architecture">
 		<description>near the Architecture Building</description>
