@@ -69,7 +69,7 @@ public class GameSystem {
 		return game.isGameOver();
 	}
 	
-	// Creates a brand new Zuul game and initializes all the rooms, and the player
+	// Creates a brand new Zuul game (open the default level built in)
 	public void newGame() {
 		openGame(DEFAULT_GAMEFILE);
 	}
@@ -85,6 +85,11 @@ public class GameSystem {
 		return game;
 	}
 	
+	public void setGame(Game g) {
+		game = g;
+	}
+	
+	// if the player hasn't pressed "save as" before, don't save because it will override the default level
 	public void saveGame() {
 		if (savePath.equals(DEFAULT_GAMEFILE)) {
 			announceGameActionFailed(new GameActionFailEvent(this, FailedAction.SAVEFILE, false));
@@ -93,11 +98,14 @@ public class GameSystem {
 		}
 	}
 	
+	// save as file
 	public void saveAsGameFile(String file) {
 		saveAsGame(DEFAULT_SAVEPATH + file);
 	}
 	
+	// save as file by path input
 	private void saveAsGame(String path) {
+		// use the default savepath and save the file there
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(path));
 			out.write(game.toXML());
@@ -109,14 +117,18 @@ public class GameSystem {
 		}		
 	}
 	
+	// open file given the name of file
 	public void openGameFile(String file) {
 		openGame(DEFAULT_SAVEPATH + file);
 	}
 	
+	// open file given the path
 	private void openGame(String path) {
 		File file = new File(path);
+		// see if the file exits, if not send a OPENFILE failed event
 		if (file.exists()) {
 			try {
+				// try to parse the file, if failed send a PARSEFILE failed event
 				DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();
 				DocumentBuilder d = factory.newDocumentBuilder();

@@ -1,13 +1,13 @@
 <game>
 <player pname="Player">
-<currentroom>Loeb</currentroom>
+<currentroom>Residence</currentroom>
 <playeritem type="Weapon">
 <name>Stick</name>
 <description>A weak weapon</description>
 <attack>1</attack>
 </playeritem>
 <attackpower>5</attackpower>
-<currentHP>14</currentHP>
+<currentHP>20</currentHP>
 <maxHP>20</maxHP>
 <equippeditem>Stick</equippeditem>
 </player>
@@ -31,13 +31,19 @@
 </room>
 <room rname="Loeb">
 <rdescription>in the Loeb building</rdescription>
-<roomitem type="Weapon">
+<exit rdirection="east">Hertzberg</exit>
+<exit rdirection="west">Southam</exit>
+<monster mname="A Vampire">
+<attack>7</attack>
+<damagerange>2</damagerange>
+<maxHP>10</maxHP>
+<currentHP>10</currentHP>
+<monsteritem type="Weapon">
 <name>SuperSword</name>
 <description>Sharp and pointy</description>
 <attack>4</attack>
-</roomitem>
-<exit rdirection="east">Hertzberg</exit>
-<exit rdirection="west">Southam</exit>
+</monsteritem>
+</monster>
 </room>
 <room rname="Southam">
 <rdescription>outside Southam Hall</rdescription>

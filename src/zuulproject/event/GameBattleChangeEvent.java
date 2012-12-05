@@ -2,6 +2,9 @@ package zuulproject.event;
 
 import zuulproject.model.innercontroller.battle.innerbattlecontroller.BattleCommandTypes;
 
+/*
+ * An event sent when the battle command is processed
+ */
 public class GameBattleChangeEvent extends GameEvent {
 
 	private static final long serialVersionUID = 8762222103990180081L;

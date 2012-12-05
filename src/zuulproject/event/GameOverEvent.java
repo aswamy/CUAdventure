@@ -1,5 +1,10 @@
 package zuulproject.event;
 
+/**
+ * An event sent to tell that the user has ended the game
+ * @author Alok
+ *
+ */
 public class GameOverEvent extends GameEvent {
 
 	private static final long serialVersionUID = -7611551191543855816L;

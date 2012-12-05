@@ -1,33 +1,28 @@
 <game>
 <player pname="Player">
-<currentroom>Southam</currentroom>
+<currentroom>Loeb</currentroom>
 <playeritem type="Weapon">
 <name>Stick</name>
 <description>A weak weapon</description>
 <attack>1</attack>
 </playeritem>
-<playeritem type="Weapon">
-<name>SuperSword</name>
-<description>Sharp and pointy</description>
-<attack>4</attack>
-</playeritem>
-<playeritem type="Weapon">
-<name>Sword</name>
-<description>A kick butt beginner weapon</description>
-<attack>2</attack>
-</playeritem>
 <attackpower>5</attackpower>
-<currentHP>11</currentHP>
+<currentHP>14</currentHP>
 <maxHP>20</maxHP>
-<equippeditem>SuperSword</equippeditem>
+<equippeditem>Stick</equippeditem>
 </player>
 <room rname="Unicenter">
 <rdescription>in the Uni-Center</rdescription>
+<roomitem type="Weapon">
+<name>Sword</name>
+<description>A kick butt beginner weapon</description>
+<attack>2</attack>
+</roomitem>
+<exit rdirection="east">Architecture</exit>
+<exit rdirection="south">Hertzberg</exit>
 <exit rdirection="north">Mackenzie</exit>
 <exit rdirection="teleporter">Southam</exit>
-<exit rdirection="south">Hertzberg</exit>
 <exit rdirection="west">Tory</exit>
-<exit rdirection="east">Architecture</exit>
 </room>
 <room rname="Hertzberg">
 <rdescription>inside the Hertzberg building</rdescription>
@@ -36,8 +31,13 @@
 </room>
 <room rname="Loeb">
 <rdescription>in the Loeb building</rdescription>
-<exit rdirection="west">Southam</exit>
+<roomitem type="Weapon">
+<name>SuperSword</name>
+<description>Sharp and pointy</description>
+<attack>4</attack>
+</roomitem>
 <exit rdirection="east">Hertzberg</exit>
+<exit rdirection="west">Southam</exit>
 </room>
 <room rname="Southam">
 <rdescription>outside Southam Hall</rdescription>
@@ -46,8 +46,8 @@
 <description>Heals 5HP</description>
 <attack>5</attack>
 </roomitem>
-<exit rdirection="teleporter">Unicenter</exit>
 <exit rdirection="east">Loeb</exit>
+<exit rdirection="teleporter">Unicenter</exit>
 </room>
 <room rname="Tory">
 <rdescription>on the main floor of Tory Building</rdescription>
@@ -85,9 +85,9 @@
 </room>
 <room rname="Minto">
 <rdescription>in the Minto lobby</rdescription>
+<exit rdirection="east">OTrain</exit>
 <exit rdirection="north">Residence</exit>
 <exit rdirection="west">Mackenzie</exit>
-<exit rdirection="east">OTrain</exit>
 </room>
 <room rname="Residence">
 <rdescription>in the Residence Common Room</rdescription>

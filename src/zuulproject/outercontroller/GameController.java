@@ -205,6 +205,20 @@ public class GameController {
 														// clicked
 			if (exitClicked != null)
 				model.processCmd("go " + exitClicked);
+			
+			boolean monsterClicked = view.get3DPanel().pointInMonster(new Point(eve.getX(), eve.getY()));
+			if (monsterClicked) {
+				view.dspMessage("You decided to fight!");
+				model.processCmd("fight");
+			}
+			
+			int itemClicked = view.get3DPanel().pointInItem(new Point(eve.getX(), eve.getY()));
+			if (itemClicked == 1) {
+				view.dspMessage("You decided to pickup!");
+				model.processCmd("pickup " + model.getGame().getPlayer().getRoom().getItemList().get(0).getName());
+			} else if (itemClicked > 1) {
+				view.showError("Too many items to pickup, try picking them up individually");
+			}
 		}
 
 		@Override

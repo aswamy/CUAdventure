@@ -62,6 +62,15 @@ public class Game {
 		initializeLevel(doc);
 	}
 
+	public Game() {
+		parser = new Parser();
+		p1 = new Player();
+		gameOver = false;
+		gameDescription = DEFAULT_DESCRIPTION;
+		listenerList = new ArrayList<GameChangeListener>();
+		rooms = new ArrayList<Room>();
+	}
+
 	public synchronized void addGameListenerList(List<GameChangeListener> g) {
 		listenerList.addAll(g);
 		p1.addGameListenerList(g);
@@ -339,6 +348,10 @@ public class Game {
 	 */
 	public Parser getParser() {
 		return parser;
+	}
+	
+	public List<Room> getRoomList() {
+		return rooms;
 	}
 
 	public String toXML() {

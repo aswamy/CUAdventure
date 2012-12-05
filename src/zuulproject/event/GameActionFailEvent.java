@@ -1,5 +1,10 @@
 package zuulproject.event;
 
+/**
+ * An event sent when opening/saving file fails
+ * @author Alok
+ *
+ */
 public class GameActionFailEvent extends GameEvent {
 	
 	private static final long serialVersionUID = -3684920525087313723L;

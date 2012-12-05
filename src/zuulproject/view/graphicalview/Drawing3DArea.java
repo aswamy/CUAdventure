@@ -2,10 +2,11 @@ package zuulproject.view.graphicalview;
 
 import zuulproject.model.*;
 import zuulproject.model.innercontroller.*;
+import zuulproject.model.itemholder.Monster;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -38,7 +39,8 @@ public class Drawing3DArea extends JPanel {
 	private GameSystem game;
 	
 	private HashMap<Exit, Shape> exits;		//this hashmap makes each exit to a certain shape (to keep track of their location)
-	
+	private HashMap<Shape, Integer> item;
+	private HashMap<ArrayList<Shape>, Monster> monster;
 	//Unlike the static 2D view, the 3D view can stretch, allowing any 2d dimension as an input
 	
 	public Drawing3DArea(GameSystem g, Dimension dimension) {
@@ -51,6 +53,8 @@ public class Drawing3DArea extends JPanel {
 		for (Exit exit : Exit.values()) {
 			exits.put(exit, null);
 		}
+		item = new HashMap<Shape, Integer>();
+		monster = new HashMap<ArrayList<Shape>, Monster>();
 	}
 
 	
@@ -169,7 +173,8 @@ public class Drawing3DArea extends JPanel {
         		g2D.setColor(Color.GREEN);
         		g2D.setStroke(BOLD_STROKE);
         		g2D.draw(shape);
-        	}
+        		item.put(shape, game.getGame().getPlayer().getRoom().numOfItems());
+        	} else item = new HashMap<>();
         	
         	if(game.getGame().getPlayer().getRoom().hasMonster())
         	{
@@ -186,12 +191,21 @@ public class Drawing3DArea extends JPanel {
         		monsterLegs.addPoint(componentWidth*19/36, componentHeight*7/9);
         		monsterLegs.addPoint(componentWidth*18/36, componentHeight*8/9);
         		
+        		ArrayList<Shape> s = new ArrayList<Shape>();
+        		s.add(monsterHead);
+        		s.add(monsterBody);
+        		s.add(monsterLegs);
+        		
         		g2D.setColor(Color.RED);
         		g2D.setStroke(BOLD_STROKE);
         		g2D.drawPolygon(monsterBody);
         		g2D.drawPolygon(monsterLegs);
         		g2D.draw(monsterHead);
-        	}
+        		
+        		monster.put(s, game.getGame().getPlayer().getRoom().getMonster());
+        		
+        	} else monster = new HashMap<>();
+        	
     		g2D.setColor(DEFAULT_COLOR);
 		}
 	}
@@ -209,6 +223,23 @@ public class Drawing3DArea extends JPanel {
 		return null;
 	}
 	
+	// check if the point is on an item
+	public int pointInItem(Point p) {
+		for (Shape s : item.keySet()) {
+			if (s.contains(p)) return item.get(s);
+		}
+		return 0;
+	}
+	
+	// check if the point is on a monster
+	public boolean pointInMonster(Point p) {
+		for (ArrayList<Shape> sl : monster.keySet()) {
+			for (Shape shape: sl) {
+				if (shape.contains(p)) return true;
+			}
+		}
+		return false;
+	}
 	/*
 	 * This was initially used to make the exits using 4 points, but this actually created more code when calling the function
 	 * since you have to turn the x and y into new Point(x,y), which is then decomposed back into x and y. Also, exits like

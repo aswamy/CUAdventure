@@ -578,17 +578,4 @@ public class GameView extends JFrame implements GameEventListener {
 			else showError("Must 'Save As' before 'Save'");
 		}
 	}
-
-	// main method, sets up the game, controller, and view
-	public static void main(String[] args) {
-		GameSystem g = new GameSystem();
-		GameView v = new GameView(g);
-		g.addGameListener(v);
-
-		@SuppressWarnings("unused")
-		GameController c = new GameController(v, g);
-
-		v.setVisible(true);
-		v.setLocationRelativeTo(null);
-	}
 }

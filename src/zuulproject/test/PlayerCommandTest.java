@@ -87,6 +87,43 @@ public class PlayerCommandTest extends TestCase{
 				(initialNumOfItems-1)==player.numOfItems());
 	}
 	
+	public void testUndoApply() {
+		Powerup powerup = new Powerup("superPill", "gives 5 atk, 0 hp", 5, 0);
+		
+		player.insertItem(powerup);
+
+		int initialNumOfItems = player.numOfItems();
+		int playerAtkPriorPowerup = player.totalAttack();
+		
+		player.processPlayerCmd(new Command(CommandTypes.APPLY, powerup.getName()));
+		player.processPlayerCmd(new Command(CommandTypes.UNDO, null)); // calls undo Appy command
+
+		assertEquals("Must restore player attack",
+				playerAtkPriorPowerup, player.totalAttack());
+		
+		assertTrue("Must return item to player",
+				(initialNumOfItems)==player.numOfItems());
+	}
+	
+	public void testDrop() {
+		Item item = new Item("item", "item description");
+		
+		room1.insertItem(item);
+
+		int playerInventoryNum = player.numOfItems();
+		int roomInventoryNum = room1.numOfItems();
+		
+		player.processPlayerCmd(new Command(CommandTypes.PICKUP, item.getName()));
+		
+		player.processPlayerCmd(new Command(CommandTypes.UNDO, null));
+		
+		assertTrue("Must restore player attack",
+				player.numOfItems()==(playerInventoryNum));
+		assertTrue("Must return item to player",
+				room1.numOfItems()==(roomInventoryNum));
+
+	}
+	
 	public void testConsume() {
 		Consumable consumable1 = new Consumable("potion", 5);
 		Consumable consumable2 = new Consumable("bigPotion", 100);
@@ -106,5 +143,19 @@ public class PlayerCommandTest extends TestCase{
 		
 		assertTrue("When potion power exceeds the amount of hp needed to recover, don't exceed maximum hp",
 				player.getCurrentHP()==player.getMaxHP());
+	}
+	
+	public void testUndoConsume() {
+		Consumable con = new Consumable("potion", 5);
+		
+		player.insertItem(con);
+		player.reduceHP(10);
+		
+		int playerHPPriorPotion = player.getCurrentHP();
+	
+		player.processPlayerCmd(new Command(CommandTypes.CONSUME, con.getName()));
+		player.processPlayerCmd(new Command(CommandTypes.UNDO, null));
+		
+		assertTrue("Player's hp must return to normal", player.getCurrentHP()==playerHPPriorPotion);
 	}
 }
