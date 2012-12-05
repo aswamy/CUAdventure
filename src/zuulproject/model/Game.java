@@ -60,7 +60,6 @@ public class Game {
 		listenerList = new ArrayList<GameChangeListener>();
 		rooms = new ArrayList<Room>();
 		initializeLevel(doc);
-		System.out.println(this.toXML());		
 	}
 
 	public synchronized void addGameListenerList(List<GameChangeListener> g) {

@@ -1,0 +1,100 @@
+<game>
+<player pname="Player">
+<currentroom>Southam</currentroom>
+<playeritem type="Weapon">
+<name>Stick</name>
+<description>A weak weapon</description>
+<attack>1</attack>
+</playeritem>
+<playeritem type="Weapon">
+<name>SuperSword</name>
+<description>Sharp and pointy</description>
+<attack>4</attack>
+</playeritem>
+<playeritem type="Weapon">
+<name>Sword</name>
+<description>A kick butt beginner weapon</description>
+<attack>2</attack>
+</playeritem>
+<attackpower>5</attackpower>
+<currentHP>11</currentHP>
+<maxHP>20</maxHP>
+<equippeditem>SuperSword</equippeditem>
+</player>
+<room rname="Unicenter">
+<rdescription>in the Uni-Center</rdescription>
+<exit rdirection="north">Mackenzie</exit>
+<exit rdirection="teleporter">Southam</exit>
+<exit rdirection="south">Hertzberg</exit>
+<exit rdirection="west">Tory</exit>
+<exit rdirection="east">Architecture</exit>
+</room>
+<room rname="Hertzberg">
+<rdescription>inside the Hertzberg building</rdescription>
+<exit rdirection="north">Unicenter</exit>
+<exit rdirection="west">Loeb</exit>
+</room>
+<room rname="Loeb">
+<rdescription>in the Loeb building</rdescription>
+<exit rdirection="west">Southam</exit>
+<exit rdirection="east">Hertzberg</exit>
+</room>
+<room rname="Southam">
+<rdescription>outside Southam Hall</rdescription>
+<roomitem type="Weapon">
+<name>SmallPotion</name>
+<description>Heals 5HP</description>
+<attack>5</attack>
+</roomitem>
+<exit rdirection="teleporter">Unicenter</exit>
+<exit rdirection="east">Loeb</exit>
+</room>
+<room rname="Tory">
+<rdescription>on the main floor of Tory Building</rdescription>
+<exit rdirection="east">Unicenter</exit>
+<monster mname="A Vampire">
+<attack>7</attack>
+<damagerange>2</damagerange>
+<maxHP>10</maxHP>
+<currentHP>10</currentHP>
+<monsteritem type="Weapon">
+<name>SuperSword</name>
+<description>Sharp and pointy</description>
+<attack>4</attack>
+</monsteritem>
+<monsteritem type="Weapon">
+<name>MegaSword</name>
+<description>Sharp and pointy</description>
+<attack>5</attack>
+</monsteritem>
+</monster>
+</room>
+<room rname="Architecture">
+<rdescription>near the Architecture Building</rdescription>
+<exit rdirection="south">ParkingLot</exit>
+<exit rdirection="west">Unicenter</exit>
+</room>
+<room rname="ParkingLot">
+<rdescription>standing in the Parking Lot</rdescription>
+<exit rdirection="north">Architecture</exit>
+</room>
+<room rname="Mackenzie">
+<rdescription>close to the Mackenzie Building</rdescription>
+<exit rdirection="south">Unicenter</exit>
+<exit rdirection="east">Minto</exit>
+</room>
+<room rname="Minto">
+<rdescription>in the Minto lobby</rdescription>
+<exit rdirection="north">Residence</exit>
+<exit rdirection="west">Mackenzie</exit>
+<exit rdirection="east">OTrain</exit>
+</room>
+<room rname="Residence">
+<rdescription>in the Residence Common Room</rdescription>
+<exit rdirection="south">Minto</exit>
+</room>
+<room rname="OTrain">
+<rdescription>in the path under the OTrain</rdescription>
+<exit rdirection="west">Mackenzie</exit>
+</room>
+</game>

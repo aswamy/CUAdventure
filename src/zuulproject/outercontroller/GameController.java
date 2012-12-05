@@ -113,8 +113,7 @@ public class GameController {
 		public void actionPerformed(ActionEvent e) {
 			String userInput = view.getSaveAsBox().getUserInput().trim();
 			if (userInput.length() > 0) {
-				// model do something!
-				// model.
+				model.saveAsGameFile(userInput);
 				view.getSaveAsBox().resetUserInput();
 				view.getSaveAsBox().showPopup(false);
 			} else {

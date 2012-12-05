@@ -248,8 +248,9 @@ public class Player extends Creature {
 			return false;
 	}
 
-	public boolean playerDeequip() {
+	public boolean playerDeequip(Command command) {
 		if (!(equippedItem == null)) {
+			command.setSecondWord(equippedItem.getName());
 			bonusAttack = 0;
 			equippedItem = null;
 			return true;
@@ -414,12 +415,11 @@ public class Player extends Creature {
 			if (commandSuccess)
 				canUndo = true;
 		} else if (commandWord == CommandTypes.DEEQUIP) {
-			boolean commandSuccess = playerDeequip();
+			boolean commandSuccess = playerDeequip(command);
 			announceGameChange(new GameChangeEvent(this, CommandTypes.DEEQUIP,
 					commandSuccess));
 			if (commandSuccess) {
 				canUndo = true;
-				command.setSecondWord(equippedItem.getName());
 			}
 		} else if (commandWord == CommandTypes.EXAMINE) {
 			Item examinedItem = playerExamine(command);
@@ -462,7 +462,7 @@ public class Player extends Creature {
 			playerMove(new Command(CommandTypes.GO, "back"));
 			break;
 		case EQUIP:
-			playerDeequip();
+			playerDeequip(cmd);
 			break;
 		case DEEQUIP:
 			playerEquip(cmd);
@@ -496,7 +496,7 @@ public class Player extends Creature {
 			playerEquip(cmd);
 			break;
 		case DEEQUIP:
-			playerDeequip();
+			playerDeequip(cmd);
 			break;
 		case PICKUP:
 			playerPickup(cmd);

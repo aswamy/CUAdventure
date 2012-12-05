@@ -40,7 +40,7 @@ public class Monster extends Creature{
     	+ "<maxHP>" + maxHP + "</maxHP>\n"
     	+ "<currentHP>" + currentHP + "</currentHP>\n"
     	+ itemsToXML("monsteritem")
-    	+ "</monster>";
+    	+ "</monster>\n";
     	return temp;
     }
 }

@@ -568,10 +568,15 @@ public class GameView extends JFrame implements GameEventListener {
 	
 	@Override
 	public void gameActionFailed(GameActionFailEvent e) {
-		if (e.getFailedAction() == FailedAction.OPENFILE) showError("File Not Found");
-		else if (e.getFailedAction() == FailedAction.PARSEFILE) showError("Save File has an error");
-		else if (e.getFailedAction() == FailedAction.SAVEFILE) showError("Must 'Save As' before 'Save'");
-		else if (e.getFailedAction() == FailedAction.SAVECOMBAT) showError("Cannot Save during a fight!\n(That's cheating)");
+		if (e.getFailedAction() == FailedAction.OPENFILE) {
+			if (e.getActionSuccess()) dspMessage("Game Successfully opened");
+			else showError("File Not Found");
+		} else if (e.getFailedAction() == FailedAction.PARSEFILE) {
+			if (!(e.getActionSuccess())) showError("Save File has an error");
+		} else if (e.getFailedAction() == FailedAction.SAVEFILE) {
+			if (e.getActionSuccess()) dspMessage("File has been saved!");
+			else showError("Must 'Save As' before 'Save'");
+		}
 	}
 
 	// main method, sets up the game, controller, and view

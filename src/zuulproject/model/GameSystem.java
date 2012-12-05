@@ -3,7 +3,9 @@ package zuulproject.model;
 import zuulproject.event.*;
 import zuulproject.event.GameActionFailEvent.FailedAction;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class GameSystem {
 	
 	public static final String DEFAULT_GAMEFILE = String.format("%s\\%s",
 			System.getProperty("user.dir"),
-			"src\\zuulproject\\saves\\level1.xml");
+			"src\\zuulproject\\level\\defaultgame.xml");
 	
 	public static final String DEFAULT_SAVEPATH = String.format("%s\\%s",
 			System.getProperty("user.dir"),
@@ -33,7 +35,7 @@ public class GameSystem {
 	public GameSystem() {
 		game = null;
 		listenerList = new ArrayList<GameChangeListener>();
-		savePath = "";
+		savePath = DEFAULT_GAMEFILE;
 	}
 	
 	// Add people who want to listen to the game
@@ -84,18 +86,34 @@ public class GameSystem {
 	}
 	
 	public void saveGame() {
-		
+		if (savePath.equals(DEFAULT_GAMEFILE)) {
+			announceGameActionFailed(new GameActionFailEvent(this, FailedAction.SAVEFILE, false));
+		} else {
+			saveAsGame(savePath);
+		}
 	}
 	
-	public void saveAsGame() {
-		
+	public void saveAsGameFile(String file) {
+		saveAsGame(DEFAULT_SAVEPATH + file);
+	}
+	
+	private void saveAsGame(String path) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(path));
+			out.write(game.toXML());
+			out.close();
+			savePath=path;
+			announceGameActionFailed(new GameActionFailEvent(this, FailedAction.SAVEFILE, true));			
+		} catch (Exception e) {
+			System.out.println("Unknown write Error");
+		}		
 	}
 	
 	public void openGameFile(String file) {
 		openGame(DEFAULT_SAVEPATH + file);
 	}
 	
-	public void openGame(String path) {
+	private void openGame(String path) {
 		File file = new File(path);
 		if (file.exists()) {
 			try {
@@ -107,13 +125,17 @@ public class GameSystem {
 				Game newGame = new Game(doc);
 				game = newGame;
 				announceGameBegins(new GameEvent(this.getGame()));				
-				if(!(savePath.equals(DEFAULT_GAMEFILE))) savePath = path;
-				
+				if(path.equals(DEFAULT_GAMEFILE)) {
+					savePath=DEFAULT_GAMEFILE;
+				} else {
+					announceGameActionFailed(new GameActionFailEvent(this, FailedAction.OPENFILE, true));
+					savePath = path;
+				}
 			} catch (Exception e) {
-				announceGameActionFailed(new GameActionFailEvent(this, FailedAction.PARSEFILE));
+				announceGameActionFailed(new GameActionFailEvent(this, FailedAction.PARSEFILE, false));
 			}
 		} else {
-			announceGameActionFailed(new GameActionFailEvent(this, FailedAction.OPENFILE));
+			announceGameActionFailed(new GameActionFailEvent(this, FailedAction.OPENFILE, false));
 		}
 	}
 }
