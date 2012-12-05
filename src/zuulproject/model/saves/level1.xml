@@ -1,6 +1,6 @@
 <game>
 	<player pname="Player">
-		<currentroom>Tory</currentroom>
+		<currentroom>Unicenter</currentroom>
 		<playeritem type="Weapon">
 			<name>Stick</name>
 			<description>A weak weapon</description>

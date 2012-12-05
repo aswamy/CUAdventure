@@ -299,7 +299,7 @@ public class Game {
 			announceGameInfo(new GameInfoEvent(this, CommandTypes.UNKNOWN));
 		} else if (commandWord == CommandTypes.HELP) {
 			announceGameInfo(new GameInfoEvent(this.getParser()
-					.getCommandWords().getCommandList(), CommandTypes.HELP));
+					.getCommandWords(), CommandTypes.HELP));
 		} else if (commandWord == CommandTypes.QUIT) {
 			gameOver = true;
 			annouceGameEnded(new GameOverEvent(GameResult.QUIT));

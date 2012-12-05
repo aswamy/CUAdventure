@@ -100,7 +100,7 @@ public class Combat {
             boolean commandStatus = playerFlees();
             announceGameBattleChange(new GameBattleChangeEvent(this, BattleCommandTypes.FLEE, commandStatus));
         } else if (commandWord == BattleCommandTypes.HELP) {
-            announceGameBattleInfo(new GameBattleInfoEvent(this.parser.getCommandWords().getBattleCommandList(), BattleCommandTypes.HELP));
+            announceGameBattleInfo(new GameBattleInfoEvent(this.parser.getCommandWords(), BattleCommandTypes.HELP));
         }
     }
     

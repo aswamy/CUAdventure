@@ -542,6 +542,8 @@ public class GameView extends JFrame implements GameEventListener {
 
 	@Override
 	public void gameBattleEnded(GameEvent e) {
+		undoGame.setEnabled(true);
+		redoGame.setEnabled(true);
 		saveGame.setEnabled(true);
 		saveAsGame.setEnabled(true);
 		this.drawing2D.repaint();
@@ -550,6 +552,8 @@ public class GameView extends JFrame implements GameEventListener {
 
 	@Override
 	public void gameBattleBegins(GameEvent e) {
+		undoGame.setEnabled(false);
+		redoGame.setEnabled(false);
 		saveGame.setEnabled(false);
 		saveAsGame.setEnabled(false);
 		dspMessage(game_model.getGame().getPlayer().getName() + " has encountered " + game_model.getGame().getPlayer().getRoom().getMonster().getName());
